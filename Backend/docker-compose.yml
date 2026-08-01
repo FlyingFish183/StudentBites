@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: studentbites-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: studentbites
+      POSTGRES_PASSWORD: studentbites
+      POSTGRES_DB: studentbites
+    ports:
+      - '5434:5432'
+    volumes:
+      - studentbites-pgdata:/var/lib/postgresql/data
+
+volumes:
+  studentbites-pgdata:

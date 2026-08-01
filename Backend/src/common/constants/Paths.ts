@@ -9,6 +9,43 @@ const Paths = {
     Update: '/update',
     Delete: '/delete/:id',
   },
+  Auth: {
+    _: '/auth',
+    Register: '/register',
+    Login: '/login',
+    Logout: '/logout',
+    Me: '/me',
+  },
+  Profile: {
+    _: '/profile',
+    Get: '/',
+    Update: '/',
+    Targets: '/targets',
+  },
+  Planner: {
+    _: '/planner',
+    Get: '/',
+    Generate: '/generate',
+    Swap: '/swap',
+  },
+  Logs: {
+    _: '/logs',
+    Add: '/',
+    GetMonth: '/',
+    GetDay: '/day/:date',
+    Delete: '/:id',
+  },
+  Stats: {
+    _: '/stats',
+    Daily: '/daily',
+    Spending: '/spending',
+  },
+  Stores: {
+    _: '/stores',
+    Nearby: '/nearby',
+    Geocode: '/geocode',
+    Compare: '/compare',
+  },
 } as const;
 
 export const JetPaths = jetPaths(Paths);

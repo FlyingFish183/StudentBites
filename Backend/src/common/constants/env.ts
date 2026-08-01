@@ -1,4 +1,4 @@
-import jetEnv, { num } from 'jet-env';
+import jetEnv, { bool, num, str } from 'jet-env';
 import tspo from 'tspo';
 
 /******************************************************************************
@@ -19,6 +19,9 @@ export const NodeEnvs = {
 const EnvVars = jetEnv({
   NodeEnv: (v) => tspo.isValue(NodeEnvs, v),
   Port: num,
+  DatabaseUrl: str,
+  JwtSecret: str,
+  CookieSecure: bool,
 });
 
 /******************************************************************************
