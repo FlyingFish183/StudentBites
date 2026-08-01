@@ -1,0 +1,174 @@
+// Prisma schema for StudentBites
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// ------------------------------- Enums -------------------------------- ///
+
+enum ActivityLevel {
+  SEDENTARY // ít vận động
+  LIGHT // vận động nhẹ 1-3 buổi/tuần
+  MODERATE // vận động vừa 3-5 buổi/tuần
+  ACTIVE // vận động nhiều 6-7 buổi/tuần
+  VERY_ACTIVE // vận động rất nhiều / lao động nặng
+}
+
+enum Goal {
+  GAIN_MUSCLE
+  LOSE_FAT
+  MAINTAIN
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+enum StoreType {
+  MARKET // chợ truyền thống
+  SUPERMARKET // siêu thị
+  CONVENIENCE // cửa hàng tiện lợi / bách hóa
+  ONLINE // website TMĐT
+}
+
+/// ------------------------------- Models ------------------------------- ///
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime  @default(now())
+  profile      Profile?
+  mealPlans    MealPlan[]
+  mealLogs     MealLog[]
+}
+
+model Profile {
+  id            Int           @id @default(autoincrement())
+  userId        Int           @unique
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  heightCm      Float
+  weightKg      Float
+  age           Int
+  gender        String // 'male' | 'female'
+  activityLevel ActivityLevel @default(MODERATE)
+  goal          Goal          @default(GAIN_MUSCLE)
+  monthlyBudget Int // VND
+  updatedAt     DateTime      @updatedAt
+}
+
+model Ingredient {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  category        String // protein / carb / rau củ / gia vị ...
+  unit            String @default("g") // đơn vị cơ bản
+  proteinPer100g  Float
+  carbPer100g     Float
+  fatPer100g      Float
+  kcalPer100g     Float
+  keywords        String[] @default([]) // dùng để match sản phẩm khi crawl
+  dishIngredients DishIngredient[]
+  prices          IngredientPrice[]
+}
+
+model Store {
+  id         Int               @id @default(autoincrement())
+  name       String
+  type       StoreType
+  address    String?
+  lat        Float?
+  lng        Float?
+  sourceSite String? // bachhoaxanh | winmart | coopmart | osm
+  osmId      String?           @unique // id từ OpenStreetMap nếu có
+  prices     IngredientPrice[]
+}
+
+model IngredientPrice {
+  id           Int        @id @default(autoincrement())
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  storeId      Int
+  store        Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productName  String // tên sản phẩm gốc trên website
+  price        Int // VND cho unitQty
+  unitQty      Float // số gram (hoặc đơn vị) tương ứng với price
+  pricePerUnit Float // VND trên 1g — để so sánh nhanh
+  productUrl   String?
+  crawledAt    DateTime   @default(now())
+
+  @@unique([ingredientId, storeId, productName])
+}
+
+model Dish {
+  id            Int              @id @default(autoincrement())
+  name          String           @unique
+  description   String?
+  mealTypes     MealType[] // món này phù hợp cho bữa nào
+  // Giá trị dinh dưỡng + chi phí cho 1 khẩu phần (tính sẵn từ nguyên liệu)
+  protein       Float
+  carb          Float
+  fat           Float
+  kcal          Float
+  estimatedCost Int // VND / khẩu phần (giá tham khảo, cập nhật từ crawler)
+  ingredients   DishIngredient[]
+  planItems     MealPlanItem[]
+  mealLogs      MealLog[]
+}
+
+model DishIngredient {
+  id           Int        @id @default(autoincrement())
+  dishId       Int
+  dish         Dish       @relation(fields: [dishId], references: [id], onDelete: Cascade)
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  amountGrams  Float // định lượng cho 1 khẩu phần
+
+  @@unique([dishId, ingredientId])
+}
+
+model MealPlan {
+  id        Int            @id @default(autoincrement())
+  userId    Int
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime       @db.Date
+  createdAt DateTime       @default(now())
+  items     MealPlanItem[]
+
+  @@unique([userId, date])
+}
+
+model MealPlanItem {
+  id            Int      @id @default(autoincrement())
+  mealPlanId    Int
+  mealPlan      MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  mealType      MealType
+  dishId        Int
+  dish          Dish     @relation(fields: [dishId], references: [id])
+  estimatedCost Int // VND, chốt tại thời điểm tạo plan
+}
+
+model MealLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       DateTime @db.Date
+  mealType   MealType
+  dishId     Int? // null nếu là món tự nhập ngoài danh sách
+  dish       Dish?    @relation(fields: [dishId], references: [id])
+  customName String? // tên món tự nhập
+  protein    Float
+  carb       Float
+  fat        Float
+  kcal       Float
+  cost       Int // VND thực chi
+  eatenAt    DateTime @default(now())
+}

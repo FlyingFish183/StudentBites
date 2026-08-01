@@ -1,6 +1,7 @@
 import logger from 'jet-logger';
 
-import EnvVars from './common/constants/env';
+import EnvVars, { NodeEnvs } from './common/constants/env';
+import { scheduleCrawlers } from './crawlers/runner';
 import server from './server';
 
 /******************************************************************************
@@ -20,5 +21,9 @@ server.listen(EnvVars.Port, (err) => {
     logger.err(err.message);
   } else {
     logger.info(SERVER_START_MESSAGE);
+    // Cron crawl giá hằng ngày (không chạy trong môi trường test)
+    if (EnvVars.NodeEnv !== NodeEnvs.TEST.valueOf()) {
+      scheduleCrawlers();
+    }
   }
 });
