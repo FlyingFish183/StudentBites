@@ -6,7 +6,7 @@ import Providers from "@/components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin", "vietnamese"],
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
