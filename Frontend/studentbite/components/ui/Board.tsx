@@ -25,13 +25,13 @@ export default function Board({
   children,
 }: IBoardProps) {
   return (
-    <section className={className}>
+    <section className={`anim-rise-sm ${className}`}>
       <div className="mb-2 flex items-center gap-2.5">
         {icon && <Icon name={icon} className="size-4 shrink-0 text-sign" />}
         <h2 className="disp shrink-0 text-[0.95rem] tracking-widest text-sign">
           {title}
         </h2>
-        <div className="h-0.5 flex-1 bg-panel/20" />
+        <div className="rule-grow h-0.5 flex-1 bg-panel/20" />
         {aside && <div className="label shrink-0 text-panel/60">{aside}</div>}
       </div>
       {children}

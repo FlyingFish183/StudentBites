@@ -24,7 +24,9 @@ export default function Banner({
   return (
     <div
       role={tone === "good" ? "status" : "alert"}
-      className={`flex items-start gap-2 border-2 px-3 py-2.5 text-[0.72rem] leading-snug font-semibold ${box} ${className}`}
+      className={`flex items-start gap-2 border-2 px-3 py-2.5 text-[0.72rem] leading-snug font-semibold ${
+        tone === "critical" ? "anim-shake" : "anim-rise-sm"
+      } ${box} ${className}`}
     >
       <Icon name={icon} className="mt-0.5 size-4 shrink-0" strokeWidth={2.4} />
       <span>{children}</span>

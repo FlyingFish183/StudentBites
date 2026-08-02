@@ -24,17 +24,17 @@ export default function AuthShell({
     <div className="min-h-dvh lg:grid lg:grid-cols-2">
       {/* Nửa biển hiệu */}
       <div className="flex items-center justify-center bg-enamel-deep px-5 py-10 lg:min-h-dvh lg:px-12">
-        <div className="w-full max-w-md">
-          <div className="panel bg-sign px-5 py-6 text-center text-ink lg:px-8 lg:py-10">
+        <div className="anim-rise w-full max-w-md">
+          <div className="sign-float panel bg-sign px-5 py-6 text-center text-ink lg:px-8 lg:py-10">
             <p className="disp text-[2rem] leading-none lg:text-[3.2rem]">
               StudentBites
             </p>
-            <div className="mx-auto my-3 h-0.5 w-16 bg-ink lg:w-24" />
+            <div className="mx-auto my-3 h-0.5 w-16 origin-center bg-ink lg:w-24" />
             <p className="text-[0.72rem] font-bold tracking-wide lg:text-[0.9rem]">
               Ăn đủ chất · Vừa túi tiền sinh viên
             </p>
           </div>
-          <ul className="mt-6 hidden space-y-2 text-[0.85rem] text-panel/65 lg:block">
+          <ul className="stagger-in mt-6 hidden space-y-2 text-[0.85rem] text-panel/65 lg:block">
             <li>Thực đơn tự lên, đủ đạm mà không vượt hạn mức ngày.</li>
             <li>Ghi lại từng bữa, biết tháng này còn tiêu được bao nhiêu.</li>
             <li>So giá nguyên liệu giữa các chợ và siêu thị quanh bạn.</li>
@@ -44,7 +44,7 @@ export default function AuthShell({
 
       {/* Nửa form */}
       <div className="flex items-center justify-center px-5 pb-12 lg:min-h-dvh lg:px-12 lg:py-10">
-        <div className="w-full max-w-md">
+        <div className="anim-rise anim-delay-2 w-full max-w-md">
           {eyebrow && <p className="label text-sign">{eyebrow}</p>}
           <h1 className="disp mt-1.5 text-[1.9rem] leading-none lg:text-[2.4rem]">
             {title}

@@ -22,7 +22,7 @@ export default function SelectCard({
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`flex w-full items-center gap-2.5 border-2 text-left transition-colors ${
+      className={`select-pop flex w-full items-center gap-2.5 border-2 text-left ${
         compact ? "justify-center px-3 py-3" : "px-3.5 py-3"
       } ${
         selected

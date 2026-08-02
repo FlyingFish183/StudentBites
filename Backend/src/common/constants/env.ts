@@ -12,6 +12,16 @@ export const NodeEnvs = {
   PRODUCTION: 'production',
 } as const;
 
+/** Cho phép thiếu hoặc để trống — chat sẽ báo lỗi rõ khi gọi API. */
+function optionalStr(
+  arg: unknown,
+  cb?: (transformedVal: string) => void,
+): arg is string {
+  const value = typeof arg === 'string' ? arg : '';
+  cb?.(value);
+  return true;
+}
+
 /******************************************************************************
                                  Setup
 ******************************************************************************/
@@ -22,6 +32,7 @@ const EnvVars = jetEnv({
   DatabaseUrl: str,
   JwtSecret: str,
   CookieSecure: bool,
+  OpenAiApiKey: optionalStr,
 });
 
 /******************************************************************************

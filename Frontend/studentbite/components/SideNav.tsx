@@ -38,10 +38,10 @@ export default function SideNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`disp flex items-center gap-3 border-2 px-3 py-2.5 text-[0.72rem] tracking-[0.12em] transition-colors ${
+              className={`disp flex items-center gap-3 border-2 px-3 py-2.5 text-[0.72rem] tracking-[0.12em] transition-[transform,color,box-shadow,border-color,background-color] duration-150 ${
                 active
                   ? "border-ink bg-sign text-ink shadow-hard-sm"
-                  : "border-transparent text-panel/60 hover:border-panel/25 hover:text-panel"
+                  : "border-transparent text-panel/60 hover:translate-x-0.5 hover:border-panel/25 hover:text-panel"
               }`}
             >
               <Icon

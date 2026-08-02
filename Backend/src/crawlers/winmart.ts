@@ -1,93 +1,136 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio';
 import logger from 'jet-logger';
 
-import { ICrawler, IRawProduct, parsePriceVnd } from './common';
+import { ICrawler, IRawProduct } from './common';
 
 /******************************************************************************
                                 Constants
 ******************************************************************************/
 
 const BASE_URL = 'https://winmart.vn';
+const API_BASE = 'https://api-crownx.winmart.vn';
 
-const CATEGORY_PATHS = [
-  '/categories/thit-1980',
-  '/categories/thuy-hai-san-1981',
-  '/categories/trung-1983',
-  '/categories/rau-cu-qua-1976',
-  '/categories/gao-bot-do-kho-2015',
-  '/categories/sua-cac-loai-1972',
+/**
+ * Trang danh mục HTML cũ (/categories/thit-1980) đã 404. WinMart render
+ * sản phẩm phía client; danh sách lấy qua API tìm kiếm CrownX.
+ *
+ * Giá phụ thuộc cửa hàng — cố định một siêu thị HCM làm mốc so sánh.
+ * Đo 2026-08-02: store 1535 (WM HCM Bàu Cát) trả được sản phẩm.
+ */
+const STORE_NO = '1535';
+const STORE_GROUP_CODE = '1999';
+const APPLICATION_TYPE = 'Windows';
+
+/** Từ khoá thực phẩm gắn với bảng Ingredient — mỗi từ một trang API. */
+const SEARCH_KEYWORDS = [
+  'thit heo',
+  'thit ga',
+  'thit bo',
+  'hai san',
+  'ca',
+  'trung',
+  'rau',
+  'cu qua',
+  'trai cay',
+  'gao',
+  'dau hu',
+  'sua tuoi',
 ];
 
 const HEADERS = {
   'User-Agent':
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
     '(KHTML, like Gecko) Chrome/125.0 Safari/537.36',
-  'Accept-Language': 'vi-VN,vi;q=0.9',
+  Accept: 'application/json',
+  Origin: BASE_URL,
+  Referer: `${BASE_URL}/`,
+  'Content-Type': 'application/json',
 };
+
+/******************************************************************************
+                                Types
+******************************************************************************/
+
+interface IWinPrice {
+  salePrice?: number;
+  originPrice?: number;
+}
+
+interface IWinItem {
+  sku?: string;
+  itemNo?: string;
+  description?: string;
+  seoName?: string;
+  image?: string;
+  uom?: string;
+  uomName?: string;
+  price?: IWinPrice;
+  warehouse?: { availableQuantity?: number };
+}
+
+interface IWinSearchResponse {
+  data?: IWinItem[];
+}
 
 /******************************************************************************
                                 Functions
 ******************************************************************************/
 
-async function crawlCategory(path: string): Promise<IRawProduct[]> {
-  const url = `${BASE_URL}${path}`;
-  const { data: html } = await axios.get<string>(url, {
-    headers: HEADERS,
-    timeout: 20000,
-  });
-  const $ = cheerio.load(html);
+function toRawProduct(item: IWinItem): IRawProduct | null {
+  const name = item.description?.trim();
+  const price = item.price?.salePrice ?? item.price?.originPrice;
+  if (!name || typeof price !== 'number' || price < 1000) return null;
+
+  const seo = item.seoName?.trim();
+  return {
+    sku: item.sku?.trim() || item.itemNo?.trim() || undefined,
+    name,
+    price,
+    url: seo ? `${BASE_URL}/${seo}` : BASE_URL,
+    imageUrl: item.image,
+    rawUnit: item.uomName || item.uom,
+    inStock: (item.warehouse?.availableQuantity ?? 0) > 0,
+  };
+}
+
+async function searchKeyword(keyword: string): Promise<IRawProduct[]> {
+  const { data } = await axios.post<IWinSearchResponse>(
+    `${API_BASE}/ss/api/v2/public/winmart/item-search`,
+    {
+      keyword,
+      pageNumber: 1,
+      pageSize: 40,
+      storeNo: STORE_NO,
+      storeGroupCode: STORE_GROUP_CODE,
+      applicationType: APPLICATION_TYPE,
+    },
+    { headers: HEADERS, timeout: 20000 },
+  );
+
   const products: IRawProduct[] = [];
-  // WinMart render SSR bằng Next.js — thử đọc từ __NEXT_DATA__ trước
-  const nextData = $('#__NEXT_DATA__').html();
-  if (nextData) {
-    try {
-      const json = JSON.parse(nextData) as Record<string, unknown>;
-      const found: IRawProduct[] = [];
-      // duyệt đệ quy tìm object có name + price
-      const walk = (node: unknown): void => {
-        if (Array.isArray(node)) return node.forEach(walk);
-        if (node && typeof node === 'object') {
-          const obj = node as Record<string, unknown>;
-          if (
-            typeof obj.name === 'string' &&
-            (typeof obj.price === 'number' || typeof obj.salePrice === 'number')
-          ) {
-            const price = (obj.salePrice ?? obj.price) as number;
-            if (price > 1000) {
-              found.push({ name: obj.name, price, url });
-            }
-          }
-          Object.values(obj).forEach(walk);
-        }
-      };
-      walk(json);
-      if (found.length > 0) return found;
-    } catch {
-      // rơi xuống parse HTML bên dưới
-    }
+  for (const item of data.data ?? []) {
+    const raw = toRawProduct(item);
+    if (raw) products.push(raw);
   }
-  // Fallback: parse card sản phẩm từ HTML
-  $('[class*=product-card], [class*=ProductCard]').each((_, el) => {
-    const $el = $(el);
-    const name = $el.find('[class*=name]').first().text().trim();
-    const priceText = $el.find('[class*=price]').first().text().trim();
-    if (!name || !priceText) return;
-    const price = parsePriceVnd(priceText);
-    if (!Number.isFinite(price) || price < 1000) return;
-    products.push({ name, price, url });
-  });
   return products;
 }
 
 async function crawl(): Promise<IRawProduct[]> {
   const all: IRawProduct[] = [];
-  for (const path of CATEGORY_PATHS) {
+  const seen = new Set<string>();
+
+  for (const keyword of SEARCH_KEYWORDS) {
     try {
-      all.push(...(await crawlCategory(path)));
-      await new Promise((r) => setTimeout(r, 1500));
+      const products = await searchKeyword(keyword);
+      for (const p of products) {
+        const key = p.sku || p.name;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        all.push(p);
+      }
+      await new Promise((r) => setTimeout(r, 800));
     } catch (err) {
-      logger.warn(`[winmart] Lỗi crawl ${path}: ${String(err)}`);
+      logger.warn(`[winmart] Lỗi search "${keyword}": ${String(err)}`);
     }
   }
   return all;

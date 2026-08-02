@@ -41,7 +41,7 @@ export default function Meter({
         aria-valuemax={Math.round(target)}
       >
         <div
-          className={`h-full transition-[width] duration-500 ${FILL[tone]}`}
+          className={`meter-fill h-full transition-[width] duration-500 ${FILL[tone]}`}
           style={{
             width: `${pct}%`,
             backgroundImage: over

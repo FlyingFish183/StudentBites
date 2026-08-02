@@ -133,7 +133,7 @@ export default function HistoryPage() {
     <main>
       <PageHeader title="Lịch sử" />
 
-      <div className="px-4 pt-3 lg:px-6 lg:pt-5">
+      <div className="anim-rise-sm anim-delay-1 px-4 pt-3 lg:px-6 lg:pt-5">
         <Segmented
           className="mb-5 lg:max-w-sm"
           value={tab}
@@ -145,7 +145,7 @@ export default function HistoryPage() {
         />
 
         {tab === "calendar" && (
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start lg:gap-8">
+          <div className="stagger-in grid gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-start lg:gap-8">
             {/* Lịch tháng */}
             <div className="border-2 border-panel/25 bg-enamel-deep px-3 py-3">
               <div className="mb-3 flex items-center justify-between">
@@ -254,6 +254,7 @@ export default function HistoryPage() {
         )}
 
         {tab === "stats" && (
+          <div className="stagger-in">
           <>
             <div className="mb-5 grid gap-3 sm:grid-cols-[auto_1fr] sm:items-center lg:gap-5">
               <Segmented
@@ -503,6 +504,7 @@ export default function HistoryPage() {
               </Board>
             </div>
           </>
+          </div>
         )}
       </div>
     </main>

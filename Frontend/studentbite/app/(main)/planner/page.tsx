@@ -76,7 +76,7 @@ export default function PlannerPage() {
     <main>
       <PageHeader title="Thực đơn" aside={formatDateVi(selectedDate)} />
 
-      <div className="px-4 pt-3 lg:px-6 lg:pt-5">
+      <div className="anim-rise-sm anim-delay-1 px-4 pt-3 lg:px-6 lg:pt-5">
         {/* Chọn ngày — cuộn ngang trên mobile, xuống dòng trên desktop */}
         <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
           {days.map((d) => (
