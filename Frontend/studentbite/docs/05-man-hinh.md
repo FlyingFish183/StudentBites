@@ -17,6 +17,7 @@
 | `/stores` | [`(main)/stores/page.tsx`](<../app/(main)/stores/page.tsx>) | Mua nguyên liệu ở đâu rẻ nhất | `/stores/nearby`, `/stores/geocode`, `/stores/compare` |
 | `/login`, `/register` | `app/login`, `app/register` | Vào tài khoản | `/auth/login`, `/auth/register` |
 | `/onboarding` | `app/onboarding` | Khai thể trạng, mục tiêu, ngân sách | `/profile` |
+| `/admin`, `/admin/[model]` | `app/admin/` | Quản trị dữ liệu 11 bảng — xem [Backend/docs/09](../../../Backend/docs/09-admin.md) | `/admin/*` |
 
 ---
 
