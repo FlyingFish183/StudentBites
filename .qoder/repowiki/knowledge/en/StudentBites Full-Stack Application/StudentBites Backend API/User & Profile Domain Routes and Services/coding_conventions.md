@@ -1,0 +1,5 @@
+- Each route file defines a `reqValidators` object using `parseReq` with field-level validators (e.g., `transform(Number, isNumber)`, enum checks against Prisma types) before delegating to the service layer.
+- Services export a default object containing an `Errors` constant map alongside function handlers, with all exported values marked `as const`.
+- Business errors are thrown as `RouteError(HttpStatusCodes.XXX, message)` rather than raw exceptions, centralizing HTTP status mapping.
+- Handler functions follow a consistent pattern: validate input via `reqValidators`, call the corresponding service method, and respond with `res.status(...).json(...)` or `.end()`.
+- Domain-specific type guards are defined inline near their usage (e.g., `isActivityLevel`, `isGoal`, `isGender`) rather than imported from shared modules.

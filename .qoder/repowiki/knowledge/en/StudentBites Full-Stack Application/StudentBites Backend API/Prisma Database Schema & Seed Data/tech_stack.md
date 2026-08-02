@@ -1,0 +1,1 @@
+Prisma ORM with `prisma-client-js` generator targeting PostgreSQL; seed script is TypeScript executed via `npm run db:seed`.

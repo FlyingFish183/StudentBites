@@ -1,0 +1,1 @@
+Express.js application with cookie-parser for cookies, helmet for security headers (production only), morgan for development request logging, and jet-logger for structured logging. Route paths are centralized via a `Paths` constant module.

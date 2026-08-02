@@ -1,0 +1,15 @@
+{
+  "name": "threejs-animation",
+  "displayName": "Three.js Animation",
+  "version": "0.1.0",
+  "description": "Three.js animation reference: keyframe, skeletal, morph targets, blending, and procedural motion.",
+  "descriptionZh": "Three.js 动画参考：关键帧、骨骼、变形目标、混合与程序化运动。",
+  "author": { "name": "CloudAI-X (threejs-skills)" },
+  "homepage": "https://github.com/CloudAI-X/threejs-skills",
+  "repository": "https://github.com/CloudAI-X/threejs-skills",
+  "logo": "./assets/avatar.svg",
+  "keywords": ["qoder-plugin", "skill", "threejs", "animation", "webgl", "3d"],
+  "category": "developer-tools",
+  "tags": ["skill", "threejs"],
+  "skills": "./skills/"
+}

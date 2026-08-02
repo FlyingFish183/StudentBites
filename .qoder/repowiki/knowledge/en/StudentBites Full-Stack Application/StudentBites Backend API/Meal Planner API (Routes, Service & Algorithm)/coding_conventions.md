@@ -1,0 +1,5 @@
+- Each route handler validates its input through a `parseReq({...})` validator object defined alongside the route, then calls a single service method with the parsed values.
+- Service methods return plain data objects (not Prisma entities) and construct response payloads via helper functions like `buildDayResult`, keeping DB shapes separate from API shapes.
+- Pure algorithm functions accept an optional `rng: () => number = Math.random` parameter to allow deterministic testing while defaulting to `Math.random` in production.
+- Domain errors are thrown as `RouteError` instances paired with constants from `HttpStatusCodes` and string messages grouped in a local `Errors` object.
+- Date handling goes through dedicated `parseDateOnly` / `formatDateOnly` helpers that normalize to ISO date strings without time components.

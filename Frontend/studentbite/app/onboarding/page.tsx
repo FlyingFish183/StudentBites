@@ -86,7 +86,7 @@ export default function OnboardingPage() {
     "outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100";
 
   return (
-    <main className="flex min-h-dvh flex-col px-6 py-8">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-6 py-8">
       {/* Step indicator */}
       <div className="mb-8 flex items-center gap-2">
         {STEPS.map((label, i) => (

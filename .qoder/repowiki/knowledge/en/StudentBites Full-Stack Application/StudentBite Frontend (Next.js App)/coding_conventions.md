@@ -1,0 +1,5 @@
+- Pages live under `app/<route>/page.tsx` following the Next.js App Router file-based routing convention.
+- Shared UI components are placed in `components/` and imported via the `@/` path alias.
+- Server data fetching goes through `lib/api.ts` with TanStack Query caching instead of direct fetch calls inside components.
+- Form inputs use React Hook Form paired with Zod schemas defined in `lib/types.ts` for validation.
+- Mobile-first styling is applied consistently via Tailwind classes with a max-width of 480px centered container.

@@ -1,0 +1,5 @@
+- Each feature follows a three-layer split: `routes/<Feature>Routes.ts` → `services/<Feature>Service.ts` → `repos/*` with shared types under `models/common/types.ts`.
+- Environment variables are validated centrally via `common/constants/env.ts` using jet-env, and every script sets `DOTENV_CONFIG_PATH=./config/.env.<env>`.
+- HTTP responses use the shared `HttpStatusCodes` constants and `route-errors` utility instead of raw status numbers.
+- Request bodies are validated through `common/utils/validators.ts` before reaching service logic.
+- Database access goes through the repository abstraction (`MockOrm` / `UserRepo` / `prisma.ts`) so tests can swap in the JSON mock without touching service code.

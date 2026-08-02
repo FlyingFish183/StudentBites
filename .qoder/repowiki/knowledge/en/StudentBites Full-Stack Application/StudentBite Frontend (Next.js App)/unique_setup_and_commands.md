@@ -1,0 +1,1 @@
+Standard Next.js scripts: `npm run dev` for development, `npm run build` / `npm start` for production, `npm run lint` via ESLint configured in `eslint.config.mjs`.

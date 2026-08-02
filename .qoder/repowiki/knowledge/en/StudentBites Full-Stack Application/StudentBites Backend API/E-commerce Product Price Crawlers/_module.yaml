@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: backend/crawlers
+title: E-commerce Product Price Crawlers
+scope:
+    - Backend/src/crawlers/
+source_files: []
+depends_on: []
+related_to:
+    - path: backend/prisma_schema
+    - path: backend/server_infrastructure

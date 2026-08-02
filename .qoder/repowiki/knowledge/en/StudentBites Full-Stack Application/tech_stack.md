@@ -1,0 +1,1 @@
+Node.js across both children; the frontend uses Next.js 16 with TanStack Query and React Hook Form, while the backend uses Express with Prisma ORM against PostgreSQL and cron-based price crawlers.

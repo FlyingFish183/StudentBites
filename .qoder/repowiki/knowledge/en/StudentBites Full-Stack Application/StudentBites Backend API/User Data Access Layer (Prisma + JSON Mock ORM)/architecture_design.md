@@ -1,0 +1,5 @@
+Two sub-packages form a thin data-access boundary around the User entity:
+- `models/` defines the `IUser` interface extending a shared `Entity` base (`id`, `created`) and ships a factory (`new_`) plus a completeness validator (`isComplete`) built on `jet-validators`.
+- `repos/` implements persistence via two interchangeable backends: `prisma.ts` exports a single `PrismaClient` instance configured from `EnvVars.DatabaseUrl`, while `MockOrm.ts` reads/writes `database.json` / `database.test.json` using `jsonfile` and `tspo`, selecting the fixture based on `NodeEnv`.
+- `UserRepo.ts` is the only public repository API (`getOne`, `persists`, `getAll`, `add`, `update`, `delete`, plus test-only `deleteAllUsers` and `insertMultiple`). It depends solely on `MockOrm`, so swapping to Prisma requires replacing that import — the repo acts as the abstraction point.
+- Dependency direction is strictly `repos → models` and `repos → common/constants/env`; models have no dependency on repos.

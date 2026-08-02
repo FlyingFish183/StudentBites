@@ -1,0 +1,2 @@
+- Authentication state flows from backend JWT/session through TanStack Query on the frontend.
+- Domain entities (user, meal plan, log, stats) are defined once in the backend schema and consumed by the frontend via REST responses.

@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: frontend_studentbite/auth_flows
+title: Authentication & Onboarding Flows
+scope:
+    - Frontend/studentbite/app/login/
+    - Frontend/studentbite/app/register/
+    - Frontend/studentbite/app/onboarding/
+source_files: []
+depends_on: []
+related_to:
+    - path: backend/auth_domain
+    - path: backend/user_profile_domain

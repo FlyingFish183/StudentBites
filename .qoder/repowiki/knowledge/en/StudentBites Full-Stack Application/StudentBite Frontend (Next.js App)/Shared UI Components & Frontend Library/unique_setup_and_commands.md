@@ -1,0 +1,1 @@
+The `StoresMap` component must be loaded dynamically via `next/dynamic` with `ssr: false` because Leaflet depends on the browser `window` object. The API client routes all requests through `/api`, which is rewritten by Next.js to the backend at port 3001.

@@ -1,0 +1,1 @@
+Reusable React components (navigation, progress indicators, map, alerts) and shared TypeScript types, API client, formatting helpers, and the TanStack Query `useMe` hook used across the StudentBite frontend.

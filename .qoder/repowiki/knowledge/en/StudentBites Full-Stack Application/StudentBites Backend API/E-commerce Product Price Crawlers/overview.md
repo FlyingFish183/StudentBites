@@ -1,0 +1,1 @@
+Scheduled web crawlers that scrape product prices from Vietnamese grocery sites (Bach Hoa Xanh, WinMart, Co.op Mart) and upsert matching ingredient prices into the Prisma database.

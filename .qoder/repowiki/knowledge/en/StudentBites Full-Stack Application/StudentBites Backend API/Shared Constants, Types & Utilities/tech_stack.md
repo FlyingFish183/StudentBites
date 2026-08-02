@@ -1,0 +1,1 @@
+TypeScript with `jet-paths` for type-safe route builders, `jet-env` + `tspo` for typed `.env` validation, `jet-validators` for request parsing utilities, and Prisma enum types (`ActivityLevel`, `Goal`, `MealType`) reused in nutrition calculations.

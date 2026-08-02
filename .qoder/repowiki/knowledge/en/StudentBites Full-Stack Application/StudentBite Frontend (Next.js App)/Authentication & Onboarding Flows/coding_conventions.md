@@ -1,0 +1,5 @@
+- Each page is a client component marked with the `"use client"` directive at the top of the file.
+- Form submission follows a uniform pattern: prevent default, clear previous error, set loading state, call `api.post`/`api.put`, invalidate relevant queries via `queryClient.invalidateQueries`, then navigate with `router.replace`.
+- API errors are handled by checking `err instanceof ApiError` and displaying localized Vietnamese messages, falling back to generic fallback text on unexpected errors.
+- Input fields use controlled state via `useState` with explicit `value`/`onChange` bindings and Tailwind classes defined inline or reused through an `inputCls` constant.
+- Navigation between auth flows uses Next.js `<Link>` for cross-links (login ↔ register) and programmatic `router.replace` for post-success redirects.

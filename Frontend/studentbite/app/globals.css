@@ -1,18 +1,80 @@
 @import "tailwindcss";
 
+/* ============================================================
+   StudentBites Design System
+   Palette: Emerald (primary/health) · Amber (secondary/energy)
+            Crimson (warning/over-budget) · Slate/Obsidian bg
+   ============================================================ */
+
 :root {
-  --background: #f7f8f6;
-  --foreground: #1a1d1a;
-  --primary: #16a34a;
-  --primary-dark: #15803d;
+  /* Surfaces */
+  --background: #f6f8f5; /* clean slate / off-white */
+  --surface: #ffffff; /* cards */
+  --surface-2: #eef2ee; /* subtle raised / track */
+  --foreground: #14201a; /* near-obsidian text */
+  --muted: #647268; /* muted text */
+  --border: #e4e9e4;
+
+  /* Brand */
+  --primary: #10b981; /* emerald 500 */
+  --primary-dark: #059669; /* emerald 600 */
+  --primary-soft: #d1fae5; /* emerald 100 */
+  --secondary: #f59e0b; /* amber 500 */
+  --secondary-soft: #fef3c7; /* amber 100 */
+  --warning: #f43f5e; /* soft crimson (rose 500) */
+  --warning-soft: #ffe4e6; /* rose 100 */
+  --success: #10b981;
+
+  /* Effects */
+  --ring-shadow: 0 8px 24px -6px rgb(16 185 129 / 0.35);
+  --shadow-card: 0 1px 3px rgb(20 32 26 / 0.06), 0 8px 24px -12px rgb(20 32 26 / 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b0f0d; /* deep obsidian */
+    --surface: #151b18;
+    --surface-2: #1e2622;
+    --foreground: #e8f0ea;
+    --muted: #93a49a;
+    --border: #263029;
+
+    --primary: #34d399; /* emerald 400 — brighter on dark */
+    --primary-dark: #10b981;
+    --primary-soft: #0d3b2e;
+    --secondary: #fbbf24;
+    --secondary-soft: #3a2c08;
+    --warning: #fb7185;
+    --warning-soft: #3d1220;
+    --success: #34d399;
+
+    --shadow-card: 0 1px 3px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
   --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --animate-glow: glow 1.8s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-drop-in: drop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 html,
@@ -27,16 +89,93 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Safe area cho iOS (tab bar dưới cùng) */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Ẩn scrollbar ngang cho dải chọn ngày */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Card surface helper */
+.card {
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---- Keyframes ---- */
+
+/* Pulsing glow (protein-low alert) */
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(245 158 11 / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 22px 4px rgb(245 158 11 / 0.55);
+  }
+}
+
+/* Shimmer sweep (best-deal badge) */
+@keyframes shimmer {
+  0% {
+    background-position: -150% 0;
+  }
+  100% {
+    background-position: 250% 0;
+  }
+}
+.shimmer {
+  background-image: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.65) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: var(--animate-shimmer);
+}
+
+/* Gentle float */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Marker drop-in bounce */
+@keyframes drop-in {
+  0% {
+    transform: translateY(-24px) scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Leaflet marker bounce (applied to divIcon) */
+.pin-drop {
+  animation: var(--animate-drop-in);
+  transform-origin: bottom center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

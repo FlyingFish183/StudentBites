@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: backend/user_profile_domain
+title: User & Profile Domain Routes and Services
+scope:
+    - Backend/src/routes/UserRoutes.ts
+    - Backend/src/routes/ProfileRoutes.ts
+    - Backend/src/services/UserService.ts
+    - Backend/src/services/ProfileService.ts
+source_files: []
+depends_on: []
+related_to:
+    - path: frontend_studentbite/auth_flows
+    - path: frontend_studentbite/main_dashboard

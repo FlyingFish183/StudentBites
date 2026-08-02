@@ -1,0 +1,5 @@
+- Environment-gated middleware is applied by checking `EnvVars.NodeEnv` against `NodeEnvs.*` values (e.g., morgan in DEV, helmet in PRODUCTION).
+- Each API feature module is registered by creating a local `Router()`, defining its routes with `Paths.<Module>.*` constants, and mounting it via `apiRouter.use(Paths.<Module>._, ...)`.
+- Protected route groups prepend the `requireAuth` middleware as the first argument to `apiRouter.use(...)` before mounting the feature router.
+- Error handling uses a single Express error-handling middleware that distinguishes `RouteError` instances to return JSON `{ error }` responses while forwarding other errors via `next(err)`.
+- Static and view directories are resolved relative to `__dirname` using `path.join(__dirname, 'public')` and `path.join(__dirname, 'views')` respectively.

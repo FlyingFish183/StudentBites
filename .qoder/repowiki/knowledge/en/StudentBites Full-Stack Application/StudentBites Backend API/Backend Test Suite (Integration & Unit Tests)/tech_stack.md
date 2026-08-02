@@ -1,0 +1,1 @@
+Vitest as the test runner (imported via `vitest`), Supertest for HTTP assertions against the Express app, Prisma client types (`@prisma/client`) for fixture data, and `jet-validators` utilities for error parsing.

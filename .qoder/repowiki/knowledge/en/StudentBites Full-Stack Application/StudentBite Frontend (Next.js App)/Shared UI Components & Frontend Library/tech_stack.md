@@ -1,0 +1,1 @@
+React + Next.js App Router (`'use client'` directives), Tailwind CSS for styling, @tanstack/react-query for data fetching/caching, framer-motion for animations, Leaflet + OpenStreetMap for maps, and a custom `fetch`-based HTTP client with `credentials: 'include'` proxied through Next.js rewrites to `:3001/api`.

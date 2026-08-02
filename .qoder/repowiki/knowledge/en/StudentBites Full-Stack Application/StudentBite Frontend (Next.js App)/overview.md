@@ -1,0 +1,1 @@
+Mobile-first Next.js 16 app that composes authentication flows, a tabbed main dashboard, and shared UI components around TanStack Query + React Hook Form for the StudentBite student nutrition planner.

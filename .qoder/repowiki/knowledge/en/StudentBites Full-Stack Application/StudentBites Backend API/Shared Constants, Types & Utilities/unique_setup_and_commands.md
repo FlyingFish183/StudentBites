@@ -1,0 +1,1 @@
+Environment variables defined in `env.ts` must match names in `.env` files and include `NodeEnv` (validated against `DEV`/`TEST`/`PRODUCTION`), `Port`, `DatabaseUrl`, `JwtSecret`, and `CookieSecure`; missing or invalid values will fail at import time via `jet-env`.

@@ -2,34 +2,41 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
-const TABS = [
-  { href: "/", label: "Trang chủ", icon: "🏠" },
-  { href: "/planner", label: "Thực đơn", icon: "🍱" },
-  { href: "/history", label: "Lịch sử", icon: "📅" },
-  { href: "/stores", label: "Mua sắm", icon: "🛒" },
-] as const;
+import { NAV_ITEMS, isActive } from "@/lib/nav";
 
+/** Mobile bottom navigation (hidden on desktop, where SideNav takes over). */
 export default function TabBar() {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[1000]">
-      <div className="pb-safe mx-auto w-full max-w-[480px] border-t border-gray-200 bg-white/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-[1000] lg:hidden">
+      <div className="pb-safe mx-auto w-full max-w-[560px] border-t border-border bg-surface/95 backdrop-blur">
         <div className="grid grid-cols-4">
-          {TABS.map((tab) => {
-            const active =
-              tab.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(tab.href);
+          {NAV_ITEMS.map((tab) => {
+            const active = isActive(pathname, tab.href);
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
-                  active ? "text-green-600" : "text-gray-400"
+                className={`relative flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
+                  active ? "text-primary-dark" : "text-muted"
                 }`}
               >
-                <span className="text-xl leading-none">{tab.icon}</span>
+                {active && (
+                  <motion.span
+                    layoutId="tabbar-active"
+                    className="absolute -top-px h-0.5 w-8 rounded-full bg-primary"
+                    transition={{ type: "spring", stiffness: 500, damping: 34 }}
+                  />
+                )}
+                <motion.span
+                  className="text-xl leading-none"
+                  animate={{ scale: active ? 1.12 : 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                >
+                  {tab.icon}
+                </motion.span>
                 {tab.label}
               </Link>
             );

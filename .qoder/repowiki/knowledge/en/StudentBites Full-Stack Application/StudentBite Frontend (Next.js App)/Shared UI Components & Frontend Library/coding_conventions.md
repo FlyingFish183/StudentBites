@@ -1,0 +1,6 @@
+- All client-side React components start with a `'use client'` directive at the top of the file.
+- API calls go through the centralized `api.{get,post,put,del}` helpers rather than calling `fetch` directly, and errors are handled by catching the typed `ApiError` class.
+- Domain shapes are defined as TypeScript `interface`s in `lib/types.ts` and imported via the `@/lib/types` path alias wherever they are needed.
+- Vietnamese localization is applied consistently: currency uses `toLocaleString('vi-VN')` plus a `đ` suffix, dates use Vietnamese weekday names, and numeric formatting follows Vietnamese conventions.
+- Components accept props via a local `interface Props` / `IProps` type and destructure them at the top of the function body.
+- Navigation items are declared once in `lib/nav.ts` as `NAV_ITEMS` and consumed by both `TabBar` and `SideNav` through the shared `isActive(pathname, href)` helper.

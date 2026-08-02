@@ -1,0 +1,1 @@
+Express routes and service layer that generate, retrieve, and swap meal-plan items for a user's daily/weekly menu using a greedy nutrition-and-budget algorithm backed by Prisma.

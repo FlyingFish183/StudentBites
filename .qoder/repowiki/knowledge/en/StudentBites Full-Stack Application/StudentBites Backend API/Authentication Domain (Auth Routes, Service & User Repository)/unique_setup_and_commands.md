@@ -1,0 +1,1 @@
+Auth cookies are configured with `httpOnly`, `sameSite: 'lax'`, and a `secure` flag sourced from `EnvVars.CookieSecure`; token signing/verification is delegated to `signToken` and `getUserId` from `routes/common/auth`. The user repository includes `@testOnly` functions (`deleteAllUsers`, `insertMultiple`) intended for unit test bootstrap.

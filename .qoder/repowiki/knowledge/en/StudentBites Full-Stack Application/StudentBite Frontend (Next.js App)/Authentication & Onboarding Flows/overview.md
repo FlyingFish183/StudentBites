@@ -1,0 +1,1 @@
+Next.js client pages for user login, registration, and a three-step onboarding wizard that collects body metrics, goals, and monthly budget before saving the profile.

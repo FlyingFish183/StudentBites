@@ -65,9 +65,9 @@ export default function StoresMap({
     } else {
       circleRef.current = L.circle(center, {
         radius: radiusM,
-        color: "#16a34a",
+        color: "#10b981",
         weight: 1.5,
-        fillColor: "#16a34a",
+        fillColor: "#10b981",
         fillOpacity: 0.08,
       }).addTo(mapRef.current);
     }
@@ -76,13 +76,13 @@ export default function StoresMap({
   // Update markers
   useEffect(() => {
     markersRef.current.clearLayers();
-    const storeIcon = L.divIcon({
-      html: `<div style="background:#16a34a;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.3)">🛒</div>`,
-      className: "",
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
-    });
-    for (const store of stores) {
+    stores.forEach((store, i) => {
+      const storeIcon = L.divIcon({
+        html: `<div class="pin-drop" style="animation-delay:${i * 55}ms;background:#10b981;width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.35)"><span style="transform:rotate(45deg);font-size:14px">🛒</span></div>`,
+        className: "",
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+      });
       const marker = L.marker([store.lat, store.lng], { icon: storeIcon });
       marker.bindPopup(
         `<b>${store.name}</b><br/>${store.address ?? ""}<br/>${store.distanceM}m`,
@@ -91,7 +91,7 @@ export default function StoresMap({
         marker.on("click", () => onMarkerClick(store));
       }
       markersRef.current.addLayer(marker);
-    }
+    });
   }, [stores, onMarkerClick]);
 
   return (

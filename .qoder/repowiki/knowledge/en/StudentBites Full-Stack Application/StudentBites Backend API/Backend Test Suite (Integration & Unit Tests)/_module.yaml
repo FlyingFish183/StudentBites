@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: backend/tests
+title: Backend Test Suite (Integration & Unit Tests)
+scope:
+    - Backend/tests/
+source_files: []
+depends_on: []
+related_to:
+    - path: backend/common_shared

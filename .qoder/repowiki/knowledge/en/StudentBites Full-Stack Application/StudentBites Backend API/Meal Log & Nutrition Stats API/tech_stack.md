@@ -1,0 +1,1 @@
+Express.js routes, Prisma ORM (`@prisma/client` MealType enum), `jet-validators` for request validation, and TypeScript utility types (`transform`).

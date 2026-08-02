@@ -1,0 +1,1 @@
+Next.js App Router client components, React hooks (`useState`, `useQuery`), @tanstack/react-query for cache invalidation, and Tailwind CSS for styling.

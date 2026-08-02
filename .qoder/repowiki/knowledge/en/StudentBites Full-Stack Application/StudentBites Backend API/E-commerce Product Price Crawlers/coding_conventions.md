@@ -1,0 +1,5 @@
+- Each crawler exports a default object conforming to the `ICrawler` interface with a `sourceSite` literal matching the store slug and a `crawl()` async function returning `IRawProduct[]`.
+- Site-specific crawlers are structured identically: constants for `BASE_URL`, `CATEGORY_PATHS`, and `HEADERS` (with a Chrome User-Agent and `Accept-Language: vi-VN`), followed by a `crawlCategory(path)` helper and a top-level `crawl()` that iterates categories with a 1500ms delay between requests.
+- Price strings are normalized through the shared `parsePriceVnd()` utility which strips non-digit characters, and products with price below 1000 VND are filtered out before being returned.
+- Error handling per category uses try/catch with `logger.warn` prefixed by the crawler name (e.g. `[bachhoaxanh] Lỗi crawl ...`) so failures do not abort the entire crawl run.
+- Database writes go exclusively through `saveProducts()` in `common.ts`, which performs longest-keyword matching against ingredient keywords and uses Prisma's `upsert` with a composite unique key on `(ingredientId, storeId, productName)`.

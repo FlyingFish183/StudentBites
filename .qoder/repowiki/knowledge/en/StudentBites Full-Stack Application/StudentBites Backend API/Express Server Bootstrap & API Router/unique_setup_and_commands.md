@@ -1,0 +1,1 @@
+The server is started by executing `main.ts`; it reads the port from `EnvVars.Port` and skips crawler scheduling when `EnvVars.NodeEnv === NodeEnvs.TEST`, which is how tests run without background jobs.

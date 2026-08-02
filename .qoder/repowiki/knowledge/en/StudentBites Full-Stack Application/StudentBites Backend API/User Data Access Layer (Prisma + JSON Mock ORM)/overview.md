@@ -1,0 +1,1 @@
+Provides the user entity model with validation and a repository layer that persists users either through a singleton Prisma client or an in-memory JSON file mock for development and testing.

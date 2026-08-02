@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: backend/logs_stats_domain
+title: Meal Log & Nutrition Stats API
+scope:
+    - Backend/src/routes/LogRoutes.ts
+    - Backend/src/services/LogService.ts
+    - Backend/src/services/StatsService.ts
+source_files: []
+depends_on: []
+related_to:
+    - path: frontend_studentbite/main_dashboard

@@ -1,0 +1,1 @@
+Next.js App Router route group for the authenticated main tab section, providing the dashboard home, meal planner, store finder with map, and spending history with charts.

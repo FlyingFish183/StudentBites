@@ -1,0 +1,4 @@
+- Constants are declared as `as const` objects and exported both as default and via a derived type alias (e.g., `type HttpStatusCodes = ValueOf<typeof HttpStatusCodes>`) to preserve literal types.
+- External configuration and path definitions are wrapped through the `jet-*` family (`jet-paths`, `jet-env`) to produce compile-time safe builders rather than raw strings.
+- Utility functions are pure and stateless, each file exporting named functions without side effects, and rely on Prisma-generated enum types for domain constraints instead of ad-hoc string literals.
+- Error classes extend `Error` (or `RouteError`) and carry an explicit HTTP status field so callers can map them directly to responses.

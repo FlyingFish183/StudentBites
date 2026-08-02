@@ -1,0 +1,5 @@
+Three-layer separation inside the module:
+- `PlannerRoutes.ts` is the Express controller layer: it validates incoming query/body parameters with `jet-validators` + `parseReq`, extracts the authenticated user id via `getUserId`, and delegates to `PlannerService`.
+- `PlannerService.ts` is the domain service: it owns all Prisma reads/writes (`mealPlan`, `mealPlanItem`, `dish`), composes results through `buildDayResult`, computes budget status against `ProfileService.getTargets`, and calls into the pure algorithm module.
+- `planner-algorithm.ts` is a stateless, testable utility module exporting pure functions (`pickMenuForDay`, `calcMenuTotals`, `findAlternative`) plus shared types (`IDishLite`, `IDayMenu`, `IMenuTotals`). It receives an injectable RNG so behavior can be deterministic in tests.
+Dependency direction is strictly one-way: Routes → Service → Algorithm; the algorithm module has no imports from routes or service. Errors are surfaced as `RouteError` instances with HTTP status codes from `HttpStatusCodes`.

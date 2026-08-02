@@ -1,0 +1,5 @@
+Three-file bootstrap layer with clear separation of concerns:
+- `main.ts` is the process entry point: it imports the configured Express app from `server.ts`, listens on `EnvVars.Port`, logs startup via `jet-logger`, and conditionally starts the crawler scheduler when `NodeEnv !== TEST`.
+- `server.ts` constructs the Express app instance, registers global middleware in a fixed order (body parsers → conditional dev logging → conditional production security → API routes → error handler), serves static files from `public/`, renders views from `views/`, and exports the app as default.
+- `routes/apiRouter.ts` is an Express `Router()` that groups feature modules (User, Auth, Profile, Planner, Logs, Stats, Stores) under their own sub-paths defined in `Paths`. Each feature router is mounted via `apiRouter.use(Paths.<Module>._, ...)`; protected modules prepend `requireAuth` middleware before mounting.
+The dependency direction is strictly one-way: `main.ts` → `server.ts` → `apiRouter.ts` → per-feature route handlers. Environment-specific behavior is gated through `EnvVars.NodeEnv` checks against `NodeEnvs` constants.

@@ -39,12 +39,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <Providers>
-          {/* Khung mobile-first: full màn hình trên mobile, 480px trên desktop */}
-          <div className="mx-auto min-h-dvh w-full max-w-[480px] bg-background shadow-xl shadow-black/5">
-            {children}
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

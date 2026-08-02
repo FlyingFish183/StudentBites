@@ -1,0 +1,1 @@
+Next.js App Router with React Server Components disabled per page via `"use client"`; state/data management via `@tanstack/react-query`; charting with `recharts` (BarChart, LineChart); interactive maps via Leaflet loaded dynamically; Tailwind CSS for styling; framer-motion for animations.

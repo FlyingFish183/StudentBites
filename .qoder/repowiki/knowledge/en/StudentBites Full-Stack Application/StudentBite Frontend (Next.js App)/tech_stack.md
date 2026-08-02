@@ -1,0 +1,1 @@
+Next.js 16 (App Router), React 19, Tailwind CSS v4, TanStack React Query v5, React Hook Form with Zod validation, Recharts for charts, Leaflet + react-leaflet for maps, date-fns for formatting.

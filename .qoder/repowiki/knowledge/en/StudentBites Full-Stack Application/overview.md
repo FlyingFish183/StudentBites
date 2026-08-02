@@ -1,0 +1,1 @@
+Full-stack StudentBites application pairing a Next.js mobile-first frontend with an Express/Prisma Node.js backend that serves REST APIs and runs scheduled price crawlers against Vietnamese grocery sites.

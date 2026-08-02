@@ -1,0 +1,1 @@
+Bootstraps the Express application, wires global middleware (JSON parsing, cookies, helmet, morgan), mounts the versioned API router under a base path, serves static frontend assets, and starts the HTTP server with optional crawler scheduling.

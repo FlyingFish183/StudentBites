@@ -1,0 +1,5 @@
+- All integer primary keys use `Int @id @default(autoincrement())` and foreign key relations are declared explicitly with `fields`/`references` tuples plus `onDelete: Cascade`.
+- Composite uniqueness is enforced via `@@unique([...])` on join tables such as `DishIngredient` and `IngredientPrice`.
+- Enums are defined at the top of the schema and imported directly into the seed script from `@prisma/client` rather than re-declared in TypeScript.
+- Seed data is organized as typed constant arrays (`INGREDIENTS`, `ONLINE_STORES`, `DISHES`) with upsert operations keyed by natural identifiers (e.g., `name`, `osmId`).
+- Monetary values are stored as integers in VND and rounded to the nearest 500-vnd increment before persistence.

@@ -1,0 +1,1 @@
+Prisma schema defining the StudentBites PostgreSQL data model (users, profiles, ingredients, stores, dishes, meal plans, and logs) along with a seed script that populates reference ingredients, online store prices, and student-friendly dishes.

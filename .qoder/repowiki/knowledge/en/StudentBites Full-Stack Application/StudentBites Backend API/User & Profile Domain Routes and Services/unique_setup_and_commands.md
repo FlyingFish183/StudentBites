@@ -1,0 +1,1 @@
+No special setup required beyond standard project bootstrap; routes rely on Prisma-generated types and the shared `parseReq` validator pipeline.

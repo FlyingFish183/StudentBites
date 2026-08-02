@@ -1,0 +1,1 @@
+No build or setup commands specific to this module — it runs as part of the Next.js app under `Frontend/studentbite/`. The stores map requires client-only rendering because Leaflet cannot run during SSR, enforced by `dynamic(() => import("@/components/StoresMap"), { ssr: false })`.

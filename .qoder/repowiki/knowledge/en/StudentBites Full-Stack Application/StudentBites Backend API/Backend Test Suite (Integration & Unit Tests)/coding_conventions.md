@@ -1,0 +1,5 @@
+- Each spec file is split into clearly labeled sections (Fixtures, Constants, Tests) separated by comment blocks for readability.
+- HTTP tests use named route constants from `Paths.Users.*` rather than hardcoded strings, and assert both `res.status` and structured `res.body` fields.
+- Shared test helpers live under `common/` and are imported directly by specs instead of being redefined inline.
+- Database state is reset in `beforeEach` or via `MockOrm.cleanDb()` in the shared agent setup to keep tests isolated.
+- Assertions use Vitest's `expect` with descriptive `it` strings that encode the expected status code and scenario in natural language.

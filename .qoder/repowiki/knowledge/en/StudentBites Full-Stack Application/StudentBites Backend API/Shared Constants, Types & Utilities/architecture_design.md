@@ -1,0 +1,6 @@
+Organized into three flat sub-packages with no internal dependencies between them:
+- `constants/` holds pure data: `HttpStatusCodes.ts` (a `as const` object of all HTTP status codes, typed via `ValueOf` from `types/structure-utils`), `Paths.ts` (hierarchical API path definitions consumed by `jet-paths` to generate a type-safe `JetPaths` builder), and `env.ts` (environment variables validated at startup via `jet-env` with `tspo` discriminators).
+- `types/` contains only `structure-utils.ts`, which exports the generic `ValueOf<T>` utility type reused by constants.
+- `utils/` provides stateless helpers: `number-utils.ts` (`getRandomInt`), `nutrition.ts` (Mifflin-St Jeor BMR + macro/budget target calculations using Prisma enum types from `@prisma/client`), `route-errors.ts` (`RouteError` base class plus `ValidationError` that wraps `jet-validators` `ParseError`s into an HTTP 400 response), and `validators.ts` (a `transformIsDate` validator built from `jet-validators` primitives).
+
+Dependency direction is strictly outward: this module imports nothing from application feature code; it is consumed by controllers/services but never imports them. External libraries are limited to `jet-paths`, `jet-env`, `jet-validators`, `tspo`, and `@prisma/client`.

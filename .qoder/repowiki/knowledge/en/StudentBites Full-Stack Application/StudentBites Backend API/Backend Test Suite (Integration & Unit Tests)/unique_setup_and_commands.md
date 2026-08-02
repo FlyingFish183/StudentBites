@@ -1,0 +1,1 @@
+Tests rely on a global `beforeAll` hook in `support/agent.ts` that initializes the Supertest agent and clears the database via `MockOrm.cleanDb()`, so the mock ORM must be configured before running tests. Path aliases like `@src/*` require the project's tsconfig/module resolution to be active when invoking Vitest.

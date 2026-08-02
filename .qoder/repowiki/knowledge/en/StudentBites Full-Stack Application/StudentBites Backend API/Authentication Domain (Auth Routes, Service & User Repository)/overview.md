@@ -1,0 +1,1 @@
+Implements user authentication endpoints (register, login, logout, me) with password hashing via bcrypt, cookie-based session tokens, and a dual persistence layer that uses Prisma in the service path and a mock ORM-backed repository for the user model.

@@ -1,0 +1,1 @@
+Vitest-based test suite for the backend, covering HTTP integration tests against a real app instance and unit tests for planner/nutrition algorithms using in-memory fixtures.

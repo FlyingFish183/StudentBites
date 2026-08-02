@@ -1,0 +1,1 @@
+TypeScript + Express for routing, `@prisma/client` for database access, `jet-validators` for request validation, and Prisma schema-driven models (`MealType`, `mealPlan`, `mealPlanItem`, `dish`).

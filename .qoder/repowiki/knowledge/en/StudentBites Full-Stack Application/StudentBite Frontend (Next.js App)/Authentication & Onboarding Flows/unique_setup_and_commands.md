@@ -1,0 +1,1 @@
+No special build or setup steps — these are standard Next.js App Router pages served by the dev server or production build of the studentbite app.

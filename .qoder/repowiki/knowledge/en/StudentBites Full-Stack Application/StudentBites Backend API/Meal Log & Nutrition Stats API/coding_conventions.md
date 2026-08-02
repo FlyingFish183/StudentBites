@@ -1,0 +1,5 @@
+- Each module exports a default object with `as const` containing its public functions and any error constants, keeping the API surface explicit and typed.
+- Request handlers validate inputs with lightweight type guards (`isDateStr`, `isMonthStr`, `isMealType`) and use `parseReq` from `./common/parseReq` for structured params, returning early with `HttpStatusCodes.BAD_REQUEST` on failure.
+- Service functions accept a numeric `userId` as their first argument and enforce ownership at the data layer (e.g., checking `log.userId !== userId` before delete) rather than relying on route-level checks.
+- Date values are normalized through `PlannerService.parseDateOnly` and formatted with `formatDateOnly` instead of native `Date` manipulation, ensuring consistent YYYY-MM-DD strings across queries and responses.
+- Business errors are thrown as `RouteError` instances carrying an `HttpStatusCodes` code and a Vietnamese message string, centralizing error semantics.

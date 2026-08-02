@@ -1,0 +1,5 @@
+- Each module exports its public API as a default object literal typed with `as const` (see `UserRepo.ts`, `MockOrm.ts`, `User.model.ts`).
+- Repository functions follow a uniform shape: open the ORM store, perform an in-memory operation, then call `saveDb` to persist changes.
+- Model factories use `parseObject` from `jet-validators` with a `Schema` definition, and throw on validation errors rather than returning them.
+- Test-only helpers are marked with a `@testOnly` JSDoc comment and kept alongside production methods in the same module.
+- Cross-cutting types like `Entity` live in `models/common/types.ts` and are extended by each entity model via interface inheritance.

@@ -1,0 +1,1 @@
+Database migrations are managed by Prisma migrations under `Backend/prisma/migrations/`; seed data is populated by running `npm run db:seed` which executes `seed.ts` against the configured `DATABASE_URL`.

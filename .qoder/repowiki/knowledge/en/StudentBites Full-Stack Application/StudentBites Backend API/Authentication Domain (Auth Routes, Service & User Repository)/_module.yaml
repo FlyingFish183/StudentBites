@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: backend/auth_domain
+title: Authentication Domain (Auth Routes, Service & User Repository)
+scope:
+    - Backend/src/routes/AuthRoutes.ts
+    - Backend/src/services/AuthService.ts
+    - Backend/src/repos/UserRepo.ts
+    - Backend/src/models/User.model.ts
+source_files: []
+depends_on: []
+related_to:
+    - path: frontend_studentbite/auth_flows

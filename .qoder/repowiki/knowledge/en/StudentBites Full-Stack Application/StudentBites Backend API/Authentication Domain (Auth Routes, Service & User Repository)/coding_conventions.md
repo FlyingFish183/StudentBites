@@ -1,0 +1,4 @@
+- Each module exports a default object using `as const` that groups related functions and constants (e.g., `{ register, login, logout, me }`, `{ Errors, register, login, getMe }`, `{ getOne, persists, getAll, add, update, delete: delete_, ... }`).
+- Business-layer errors are thrown as `RouteError` instances constructed with an `HttpStatusCodes` enum value and a Vietnamese message string defined in a local `Errors` constant object.
+- Request bodies are validated declaratively via `parseReq({...})` with field-level validators from `jet-validators` before being passed to service methods.
+- Database access goes through a single Prisma instance imported from `@src/repos/prisma` rather than creating connections inline, and queries use explicit `select` projections to limit returned fields.

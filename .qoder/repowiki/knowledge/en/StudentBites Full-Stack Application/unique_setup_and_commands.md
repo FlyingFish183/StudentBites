@@ -1,0 +1,1 @@
+Each child module is developed and run independently (frontend via Next.js dev server, backend via its own start script); there is no single monorepo entrypoint command in scope.

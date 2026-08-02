@@ -1,0 +1,1 @@
+TypeScript crawlers using axios for HTTP requests, cheerio for HTML parsing, node-cron for scheduling, and Prisma client for database upserts against `Store`, `Ingredient`, and `IngredientPrice` tables.

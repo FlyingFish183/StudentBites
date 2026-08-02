@@ -1,0 +1,200 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-08-01T15:49:31Z"
+modules:
+    "":
+        dir_name: StudentBites Full-Stack Application
+        title: StudentBites Full-Stack Application
+        scope:
+            - README.md
+        source_files: []
+        children:
+            - backend
+            - frontend_studentbite
+        depends_on: []
+        related_to: []
+    backend:
+        dir_name: StudentBites Backend API
+        title: StudentBites Backend API
+        scope:
+            - Backend/
+        source_files: []
+        children:
+            - backend/auth_domain
+            - backend/common_shared
+            - backend/crawlers
+            - backend/data_layer
+            - backend/logs_stats_domain
+            - backend/planner_domain
+            - backend/prisma_schema
+            - backend/server_infrastructure
+            - backend/tests
+            - backend/user_profile_domain
+        depends_on: []
+        related_to: []
+    backend/auth_domain:
+        dir_name: Authentication Domain (Auth Routes, Service & User Repository)
+        title: Authentication Domain (Auth Routes, Service & User Repository)
+        scope:
+            - Backend/src/routes/AuthRoutes.ts
+            - Backend/src/services/AuthService.ts
+            - Backend/src/repos/UserRepo.ts
+            - Backend/src/models/User.model.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_studentbite/auth_flows
+    backend/common_shared:
+        dir_name: Shared Constants, Types & Utilities
+        title: Shared Constants, Types & Utilities
+        scope:
+            - Backend/src/common/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/tests
+    backend/crawlers:
+        dir_name: E-commerce Product Price Crawlers
+        title: E-commerce Product Price Crawlers
+        scope:
+            - Backend/src/crawlers/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/prisma_schema
+            - path: backend/server_infrastructure
+    backend/data_layer:
+        dir_name: User Data Access Layer (Prisma + JSON Mock ORM)
+        title: User Data Access Layer (Prisma + JSON Mock ORM)
+        scope:
+            - Backend/src/repos/
+            - Backend/src/models/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    backend/logs_stats_domain:
+        dir_name: Meal Log & Nutrition Stats API
+        title: Meal Log & Nutrition Stats API
+        scope:
+            - Backend/src/routes/LogRoutes.ts
+            - Backend/src/services/LogService.ts
+            - Backend/src/services/StatsService.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_studentbite/main_dashboard
+    backend/planner_domain:
+        dir_name: Meal Planner API (Routes, Service & Algorithm)
+        title: Meal Planner API (Routes, Service & Algorithm)
+        scope:
+            - Backend/src/routes/PlannerRoutes.ts
+            - Backend/src/services/PlannerService.ts
+            - Backend/src/services/planner-algorithm.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_studentbite/main_dashboard
+    backend/prisma_schema:
+        dir_name: Prisma Database Schema & Seed Data
+        title: Prisma Database Schema & Seed Data
+        scope:
+            - Backend/prisma/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/crawlers
+    backend/server_infrastructure:
+        dir_name: Express Server Bootstrap & API Router
+        title: Express Server Bootstrap & API Router
+        scope:
+            - Backend/src/server.ts
+            - Backend/src/main.ts
+            - Backend/src/routes/apiRouter.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/crawlers
+            - path: frontend_studentbite
+    backend/tests:
+        dir_name: Backend Test Suite (Integration & Unit Tests)
+        title: Backend Test Suite (Integration & Unit Tests)
+        scope:
+            - Backend/tests/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/common_shared
+    backend/user_profile_domain:
+        dir_name: User & Profile Domain Routes and Services
+        title: User & Profile Domain Routes and Services
+        scope:
+            - Backend/src/routes/UserRoutes.ts
+            - Backend/src/routes/ProfileRoutes.ts
+            - Backend/src/services/UserService.ts
+            - Backend/src/services/ProfileService.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_studentbite/auth_flows
+            - path: frontend_studentbite/main_dashboard
+    frontend_studentbite:
+        dir_name: StudentBite Frontend (Next.js App)
+        title: StudentBite Frontend (Next.js App)
+        scope:
+            - Frontend/studentbite/
+        source_files: []
+        children:
+            - frontend_studentbite/auth_flows
+            - frontend_studentbite/main_dashboard
+            - frontend_studentbite/shared_ui_and_lib
+        depends_on: []
+        related_to:
+            - path: backend/server_infrastructure
+    frontend_studentbite/auth_flows:
+        dir_name: Authentication & Onboarding Flows
+        title: Authentication & Onboarding Flows
+        scope:
+            - Frontend/studentbite/app/login/
+            - Frontend/studentbite/app/register/
+            - Frontend/studentbite/app/onboarding/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/auth_domain
+            - path: backend/user_profile_domain
+    frontend_studentbite/main_dashboard:
+        dir_name: Main Dashboard Route Group (Authenticated Tabs)
+        title: Main Dashboard Route Group (Authenticated Tabs)
+        scope:
+            - Frontend/studentbite/app/(main)/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: backend/logs_stats_domain
+            - path: backend/planner_domain
+            - path: backend/user_profile_domain
+    frontend_studentbite/shared_ui_and_lib:
+        dir_name: Shared UI Components & Frontend Library
+        title: Shared UI Components & Frontend Library
+        scope:
+            - Frontend/studentbite/components/
+            - Frontend/studentbite/lib/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

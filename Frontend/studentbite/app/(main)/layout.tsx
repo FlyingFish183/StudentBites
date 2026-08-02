@@ -3,10 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import SideNav from "@/components/SideNav";
 import TabBar from "@/components/TabBar";
 import { useMe } from "@/lib/hooks";
 
-/** Layout cho các tab chính: yêu cầu đăng nhập + tab bar dưới cùng. */
+/** Layout cho các tab chính: yêu cầu đăng nhập + shell responsive. */
 export default function MainLayout({
   children,
 }: {
@@ -24,16 +25,21 @@ export default function MainLayout({
       <div className="flex min-h-dvh items-center justify-center">
         <div className="text-center">
           <div className="animate-bounce text-4xl">🍚</div>
-          <p className="mt-2 text-sm text-gray-400">Đang tải...</p>
+          <p className="mt-2 text-sm text-muted">Đang tải...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="pb-24">{children}</div>
+    <div className="mx-auto flex min-h-dvh w-full max-w-[1280px]">
+      <SideNav />
+      <div className="min-w-0 flex-1 pb-24 lg:pb-8">
+        <div className="mx-auto w-full max-w-[720px] lg:max-w-none">
+          {children}
+        </div>
+      </div>
       <TabBar />
-    </>
+    </div>
   );
 }

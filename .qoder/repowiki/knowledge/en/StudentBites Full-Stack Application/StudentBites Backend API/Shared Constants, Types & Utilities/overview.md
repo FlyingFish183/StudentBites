@@ -1,0 +1,1 @@
+Cross-cutting shared primitives for the backend: HTTP status codes, typed route paths, environment validation, nutrition calculations, and common validators/errors used by all other modules.

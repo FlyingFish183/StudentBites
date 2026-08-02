@@ -1,0 +1,1 @@
+No special build or setup steps beyond standard backend startup; requires a configured Prisma database with `mealLog` and `dish` tables and a `ProfileService` exposing `getTargets(userId)`.

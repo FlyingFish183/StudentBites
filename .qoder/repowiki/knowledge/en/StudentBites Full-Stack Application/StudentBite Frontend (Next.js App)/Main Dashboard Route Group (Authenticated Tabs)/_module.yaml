@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: frontend_studentbite/main_dashboard
+title: Main Dashboard Route Group (Authenticated Tabs)
+scope:
+    - Frontend/studentbite/app/(main)/
+source_files: []
+depends_on: []
+related_to:
+    - path: backend/logs_stats_domain
+    - path: backend/planner_domain
+    - path: backend/user_profile_domain

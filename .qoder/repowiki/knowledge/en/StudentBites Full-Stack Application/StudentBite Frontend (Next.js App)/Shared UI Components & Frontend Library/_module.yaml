@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: frontend_studentbite/shared_ui_and_lib
+title: Shared UI Components & Frontend Library
+scope:
+    - Frontend/studentbite/components/
+    - Frontend/studentbite/lib/
+source_files: []
+depends_on: []
+related_to: []

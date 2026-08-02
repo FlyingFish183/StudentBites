@@ -1,0 +1,1 @@
+TypeScript with Prisma (`@prisma/client`) for production persistence, `jsonfile` + `tspo` for the JSON-file mock database, and `jet-validators` (with `parseObject`/`testObject`) for schema-based input validation.

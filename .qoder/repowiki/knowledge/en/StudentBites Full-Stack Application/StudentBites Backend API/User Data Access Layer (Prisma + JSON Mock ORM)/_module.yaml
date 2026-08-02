@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: backend/data_layer
+title: User Data Access Layer (Prisma + JSON Mock ORM)
+scope:
+    - Backend/src/repos/
+    - Backend/src/models/
+source_files: []
+depends_on: []
+related_to: []

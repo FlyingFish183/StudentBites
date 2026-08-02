@@ -1,0 +1,1 @@
+`npm run dev` runs both the TS watcher and BrowserSync; `npm run db:up` starts PostgreSQL via docker-compose; `npm run db:migrate` applies Prisma migrations; `npm run db:seed` seeds reference data; `npm run crawl` runs the price crawlers manually; `npm run build` compiles to `dist/` and copies static assets; `npm test` runs the Vitest suite.

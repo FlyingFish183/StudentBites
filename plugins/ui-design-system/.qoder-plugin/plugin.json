@@ -1,0 +1,15 @@
+{
+  "name": "ui-design-system",
+  "displayName": "UI Design System",
+  "version": "0.1.0",
+  "description": "Design system toolkit for token generation, responsive design, accessibility, and developer handoff.",
+  "descriptionZh": "用于设计令牌生成、响应式设计、无障碍与开发交付的设计系统工具集。",
+  "author": { "name": "davila7 (claude-code-templates)" },
+  "homepage": "https://github.com/davila7/claude-code-templates",
+  "repository": "https://github.com/davila7/claude-code-templates",
+  "logo": "./assets/avatar.svg",
+  "keywords": ["qoder-plugin", "skill", "design-system", "design-tokens", "ui", "accessibility"],
+  "category": "developer-tools",
+  "tags": ["skill", "design-system"],
+  "skills": "./skills/"
+}

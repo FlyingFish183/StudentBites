@@ -1,0 +1,1 @@
+Runtime behavior switches between real DB and JSON mock based on `EnvVars.NodeEnv === NodeEnvs.TEST`; when running tests, `MockOrm` loads `common/database.test.json` instead of `common/database.json`. The Prisma client is instantiated once as a module-level singleton using `EnvVars.DatabaseUrl`.

@@ -1,0 +1,1 @@
+Express-based Node.js backend that serves REST endpoints for user auth, profiles, meal planning, logging, and stats while scheduling price crawlers against Vietnamese grocery sites, all backed by a Prisma-managed PostgreSQL database.

@@ -1,0 +1,1 @@
+TypeScript with Express, Prisma ORM for database access, jet-validators for request schema validation, and Prisma's generated `ActivityLevel`/`Goal` enums from `@prisma/client`.

@@ -1,0 +1,5 @@
+- Each route page is a client component declared with the `"use client"` directive at the top of every `page.tsx` file.
+- Data fetching uses `@tanstack/react-query` with `useQuery` for reads and `useMutation` for writes, with query keys structured as arrays like `["plan", date]` or `["logs-day", date]`.
+- API calls go through the centralized `api.get`/`api.post` helpers from `@/lib/api`, and errors are handled by checking `err instanceof ApiError` before displaying messages.
+- User-facing text is localized in Vietnamese, while code identifiers (route names, type names, constants like `MEAL_LABELS`, `MEAL_ORDER`) stay in English.
+- Conditional rendering follows an explicit loading/error pattern: show a loading placeholder while `isLoading`, render content when data exists, and display error banners styled with red backgrounds for failures.

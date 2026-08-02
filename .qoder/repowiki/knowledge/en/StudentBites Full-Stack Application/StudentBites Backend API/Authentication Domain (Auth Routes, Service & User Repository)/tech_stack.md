@@ -1,0 +1,1 @@
+Express.js routes, bcryptjs for password hashing, Prisma client for production persistence, jet-validators for request/model validation, and a custom MockOrm-backed in-memory file store for the user repository.

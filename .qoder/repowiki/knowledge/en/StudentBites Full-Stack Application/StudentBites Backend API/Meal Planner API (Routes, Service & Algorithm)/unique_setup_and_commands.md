@@ -1,0 +1,1 @@
+No special build or setup steps beyond standard Prisma migration (`npx prisma migrate deploy`) and seeding of dishes/profile targets required for the planner algorithm to produce valid menus.

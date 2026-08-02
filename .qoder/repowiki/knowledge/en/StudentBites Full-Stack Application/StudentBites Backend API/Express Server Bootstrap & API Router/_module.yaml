@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: backend/server_infrastructure
+title: Express Server Bootstrap & API Router
+scope:
+    - Backend/src/server.ts
+    - Backend/src/main.ts
+    - Backend/src/routes/apiRouter.ts
+source_files: []
+depends_on: []
+related_to:
+    - path: backend/crawlers
+    - path: frontend_studentbite

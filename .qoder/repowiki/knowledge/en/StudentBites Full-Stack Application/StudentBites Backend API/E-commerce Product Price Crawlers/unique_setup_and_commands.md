@@ -1,0 +1,1 @@
+Run manually via `npm run crawl` (the runner detects `require.main === module` and executes `runAllCrawlers()` then disconnects Prisma). When integrated into the server, call `scheduleCrawlers()` from `main.ts` during startup to register the daily 02:00 cron job.

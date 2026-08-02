@@ -1,0 +1,1 @@
+Express 5 + TypeScript on Node ≥16, Prisma with PostgreSQL for persistence, bcryptjs for password hashing, jsonwebtoken for session tokens, node-cron for scheduled crawlers, Cheerio for web scraping, Vitest + Supertest for testing, and ESLint/Prettier for code quality.

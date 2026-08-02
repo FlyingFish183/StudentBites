@@ -1,0 +1,1 @@
+Express route handlers and services for recording meal logs, retrieving daily/monthly log histories, and computing nutrition and spending statistics against user targets.
