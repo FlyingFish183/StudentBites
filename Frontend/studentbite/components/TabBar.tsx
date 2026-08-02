@@ -3,20 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const TABS = [
-  { href: "/", label: "Trang chủ", icon: "🏠" },
-  { href: "/planner", label: "Thực đơn", icon: "🍱" },
-  { href: "/history", label: "Lịch sử", icon: "📅" },
-  { href: "/stores", label: "Mua sắm", icon: "🛒" },
-] as const;
+import Icon from "@/components/ui/Icon";
+import { NAV_ITEMS } from "@/lib/nav";
 
+/** Điều hướng cho mobile/tablet; từ 1024px trở lên nhường chỗ cho SideNav. */
 export default function TabBar() {
   const pathname = usePathname();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[1000]">
-      <div className="pb-safe mx-auto w-full max-w-[480px] border-t border-gray-200 bg-white/95 backdrop-blur">
+    <nav className="fixed inset-x-0 bottom-0 z-[1000] lg:hidden">
+      <div className="pb-safe mx-auto w-full max-w-120 border-t-3 border-sign bg-enamel-deep md:max-w-215">
         <div className="grid grid-cols-4">
-          {TABS.map((tab) => {
+          {NAV_ITEMS.map((tab) => {
             const active =
               tab.href === "/"
                 ? pathname === "/"
@@ -25,11 +22,16 @@ export default function TabBar() {
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
-                  active ? "text-green-600" : "text-gray-400"
+                aria-current={active ? "page" : undefined}
+                className={`disp flex flex-col items-center gap-1 py-2.5 text-[0.58rem] tracking-[0.08em] transition-colors ${
+                  active ? "text-sign" : "text-panel/45"
                 }`}
               >
-                <span className="text-xl leading-none">{tab.icon}</span>
+                <Icon
+                  name={tab.icon}
+                  className="size-5.5"
+                  strokeWidth={active ? 2.4 : 1.9}
+                />
                 {tab.label}
               </Link>
             );

@@ -4,10 +4,16 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import Banner from "@/components/ui/Banner";
+import Button from "@/components/ui/Button";
+import Chip from "@/components/ui/Chip";
+import Field from "@/components/ui/Field";
+import SelectCard from "@/components/ui/SelectCard";
 import { api, ApiError } from "@/lib/api";
 import { formatVnd } from "@/lib/format";
 import {
   ACTIVITY_LABELS,
+  GOAL_HINTS,
   GOAL_LABELS,
   type ActivityLevel,
   type Goal,
@@ -15,6 +21,7 @@ import {
 } from "@/lib/types";
 
 const STEPS = ["Thể trạng", "Mục tiêu", "Ngân sách"] as const;
+const BUDGET_PRESETS = [1_500_000, 2_000_000, 3_000_000, 4_000_000];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -28,8 +35,7 @@ export default function OnboardingPage() {
   const [weightKg, setWeightKg] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState<"male" | "female">("male");
-  const [activityLevel, setActivityLevel] =
-    useState<ActivityLevel>("MODERATE");
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel>("MODERATE");
   const [goal, setGoal] = useState<Goal>("GAIN_MUSCLE");
   const [monthlyBudget, setMonthlyBudget] = useState("3000000");
 
@@ -56,7 +62,7 @@ export default function OnboardingPage() {
 
   const step1Valid =
     Number(heightCm) > 50 && Number(weightKg) > 20 && Number(age) >= 15;
-  const budgetValid = Number(monthlyBudget) >= 300000;
+  const budgetValid = Number(monthlyBudget) >= 300_000;
 
   async function onFinish() {
     setError("");
@@ -75,28 +81,32 @@ export default function OnboardingPage() {
       router.replace("/");
     } catch (err) {
       setError(
-        err instanceof ApiError ? err.message : "Không thể lưu, thử lại sau",
+        err instanceof ApiError
+          ? err.message
+          : "Chưa lưu được hồ sơ. Kiểm tra mạng rồi thử lại.",
       );
       setSaving(false);
     }
   }
 
-  const inputCls =
-    "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-base " +
-    "outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100";
-
   return (
-    <main className="flex min-h-dvh flex-col px-6 py-8">
-      {/* Step indicator */}
-      <div className="mb-8 flex items-center gap-2">
+    <main className="mx-auto flex min-h-dvh w-full max-w-140 flex-col px-5 py-7 lg:max-w-170 lg:py-14">
+      {/* Bước hiện tại */}
+      <div className="mb-7 flex items-start gap-1.5">
         {STEPS.map((label, i) => (
           <div key={label} className="flex-1">
             <div
-              className={`h-1.5 rounded-full ${i <= step ? "bg-green-500" : "bg-gray-200"}`}
+              className={`h-2 border-2 ${
+                i < step
+                  ? "border-sign bg-sign"
+                  : i === step
+                    ? "border-sign bg-transparent"
+                    : "border-panel/25 bg-transparent"
+              }`}
             />
             <p
-              className={`mt-1.5 text-center text-[11px] ${
-                i <= step ? "font-semibold text-green-600" : "text-gray-400"
+              className={`label mt-1.5 text-center ${
+                i <= step ? "text-sign" : "text-panel/35"
               }`}
             >
               {label}
@@ -107,90 +117,72 @@ export default function OnboardingPage() {
 
       {step === 0 && (
         <section className="flex-1 space-y-4">
-          <h1 className="text-xl font-bold">Thể trạng của bạn 📏</h1>
-          <p className="text-sm text-gray-500">
-            Dùng để tính lượng calo và protein bạn cần mỗi ngày.
-          </p>
+          <header>
+            <h1 className="disp text-[1.7rem] leading-none">Thể trạng</h1>
+            <p className="mt-2 text-[0.8rem] text-panel/60">
+              Dùng để tính lượng calo và protein bạn cần mỗi ngày.
+            </p>
+          </header>
+
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                Chiều cao (cm)
-              </label>
-              <input
-                type="number"
-                inputMode="numeric"
-                value={heightCm}
-                onChange={(e) => setHeightCm(e.target.value)}
-                placeholder="170"
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                Cân nặng (kg)
-              </label>
-              <input
-                type="number"
-                inputMode="numeric"
-                value={weightKg}
-                onChange={(e) => setWeightKg(e.target.value)}
-                placeholder="65"
-                className={inputCls}
-              />
-            </div>
+            <Field
+              label="Chiều cao"
+              type="number"
+              inputMode="numeric"
+              value={heightCm}
+              onChange={(e) => setHeightCm(e.target.value)}
+              placeholder="170"
+              suffix="cm"
+            />
+            <Field
+              label="Cân nặng"
+              type="number"
+              inputMode="numeric"
+              value={weightKg}
+              onChange={(e) => setWeightKg(e.target.value)}
+              placeholder="65"
+              suffix="kg"
+            />
           </div>
+
           <div className="grid grid-cols-2 gap-3">
+            <Field
+              label="Tuổi"
+              type="number"
+              inputMode="numeric"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              placeholder="20"
+            />
             <div>
-              <label className="mb-1 block text-sm font-medium">Tuổi</label>
-              <input
-                type="number"
-                inputMode="numeric"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="20"
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                Giới tính
-              </label>
+              <p className="label mb-1.5 text-panel/70">Giới tính</p>
               <div className="grid grid-cols-2 gap-2">
-                {(["male", "female"] as const).map((g) => (
-                  <button
-                    key={g}
-                    type="button"
-                    onClick={() => setGender(g)}
-                    className={`rounded-xl border py-3 text-sm font-medium ${
-                      gender === g
-                        ? "border-green-500 bg-green-50 text-green-700"
-                        : "border-gray-200 bg-white text-gray-600"
-                    }`}
-                  >
-                    {g === "male" ? "Nam" : "Nữ"}
-                  </button>
-                ))}
+                <SelectCard
+                  compact
+                  title="Nam"
+                  selected={gender === "male"}
+                  onClick={() => setGender("male")}
+                />
+                <SelectCard
+                  compact
+                  title="Nữ"
+                  selected={gender === "female"}
+                  onClick={() => setGender("female")}
+                />
               </div>
             </div>
           </div>
+
           <div>
-            <label className="mb-1 block text-sm font-medium">
-              Mức độ vận động
-            </label>
-            <div className="space-y-2">
+            <p className="label mb-1.5 text-panel/70">Mức độ vận động</p>
+            <div className="grid gap-2 sm:grid-cols-2">
               {(Object.keys(ACTIVITY_LABELS) as ActivityLevel[]).map((lv) => (
-                <button
+                <SelectCard
                   key={lv}
-                  type="button"
+                  title={ACTIVITY_LABELS[lv]}
+                  selected={activityLevel === lv}
                   onClick={() => setActivityLevel(lv)}
-                  className={`block w-full rounded-xl border px-4 py-3 text-left text-sm ${
-                    activityLevel === lv
-                      ? "border-green-500 bg-green-50 font-semibold text-green-700"
-                      : "border-gray-200 bg-white text-gray-600"
-                  }`}
-                >
-                  {ACTIVITY_LABELS[lv]}
-                </button>
+                />
               ))}
             </div>
           </div>
@@ -199,31 +191,21 @@ export default function OnboardingPage() {
 
       {step === 1 && (
         <section className="flex-1 space-y-4">
-          <h1 className="text-xl font-bold">Mục tiêu của bạn 🎯</h1>
-          <p className="text-sm text-gray-500">
-            Quyết định lượng protein và calo mục tiêu mỗi ngày.
-          </p>
-          <div className="space-y-3">
+          <header>
+            <h1 className="disp text-[1.7rem] leading-none">Mục tiêu</h1>
+            <p className="mt-2 text-[0.8rem] text-panel/60">
+              Quyết định lượng protein và calo mục tiêu mỗi ngày.
+            </p>
+          </header>
+          <div className="space-y-2.5">
             {(Object.keys(GOAL_LABELS) as Goal[]).map((g) => (
-              <button
+              <SelectCard
                 key={g}
-                type="button"
+                title={GOAL_LABELS[g]}
+                hint={GOAL_HINTS[g]}
+                selected={goal === g}
                 onClick={() => setGoal(g)}
-                className={`block w-full rounded-2xl border-2 px-5 py-4 text-left ${
-                  goal === g
-                    ? "border-green-500 bg-green-50"
-                    : "border-gray-200 bg-white"
-                }`}
-              >
-                <span className="text-base font-semibold">
-                  {GOAL_LABELS[g]}
-                </span>
-                <p className="mt-0.5 text-xs text-gray-500">
-                  {g === "GAIN_MUSCLE" && "Protein 2g/kg, dư ~300 kcal/ngày"}
-                  {g === "LOSE_FAT" && "Protein 2.2g/kg, hụt ~300 kcal/ngày"}
-                  {g === "MAINTAIN" && "Protein 1.6g/kg, giữ nguyên calo"}
-                </p>
-              </button>
+              />
             ))}
           </div>
         </section>
@@ -231,82 +213,85 @@ export default function OnboardingPage() {
 
       {step === 2 && (
         <section className="flex-1 space-y-4">
-          <h1 className="text-xl font-bold">Ngân sách ăn uống 💰</h1>
-          <p className="text-sm text-gray-500">
-            Tiền chu cấp/thu nhập dành cho ăn uống mỗi tháng. App sẽ chia đều
-            theo ngày và từng bữa.
-          </p>
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Ngân sách tháng (VND)
-            </label>
-            <input
-              type="number"
-              inputMode="numeric"
-              step={100000}
-              value={monthlyBudget}
-              onChange={(e) => setMonthlyBudget(e.target.value)}
-              className={inputCls}
-            />
-          </div>
+          <header>
+            <h1 className="disp text-[1.7rem] leading-none">Ngân sách</h1>
+            <p className="mt-2 text-[0.8rem] text-panel/60">
+              Tiền dành cho ăn uống mỗi tháng. App chia đều theo ngày rồi theo
+              từng bữa.
+            </p>
+          </header>
+
+          <Field
+            label="Ngân sách tháng"
+            type="number"
+            inputMode="numeric"
+            step={100_000}
+            value={monthlyBudget}
+            onChange={(e) => setMonthlyBudget(e.target.value)}
+            suffix="đ"
+          />
+
           <div className="flex flex-wrap gap-2">
-            {[1500000, 2000000, 3000000, 4000000].map((v) => (
-              <button
+            {BUDGET_PRESETS.map((v) => (
+              <Chip
                 key={v}
-                type="button"
+                active={Number(monthlyBudget) === v}
                 onClick={() => setMonthlyBudget(String(v))}
-                className={`rounded-full border px-4 py-2 text-sm ${
-                  Number(monthlyBudget) === v
-                    ? "border-green-500 bg-green-50 font-semibold text-green-700"
-                    : "border-gray-200 bg-white text-gray-600"
-                }`}
               >
                 {formatVnd(v)}
-              </button>
+              </Chip>
             ))}
           </div>
+
           {budgetValid && (
-            <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">
-              ≈ {formatVnd(Number(monthlyBudget) / 30)}/ngày cho 4 bữa
-            </p>
+            <div className="panel bg-sign px-4 py-4 text-ink">
+              <p className="label opacity-70">Tương đương mỗi ngày</p>
+              <p className="disp-num mt-1.5 text-[2.1rem]">
+                {formatVnd(Number(monthlyBudget) / 30)}
+              </p>
+              <div className="my-2 h-0.5 bg-ink" />
+              <p className="text-[0.7rem] font-bold">
+                Chia cho 4 bữa: sáng 25% · trưa 35% · tối 30% · phụ 10%
+              </p>
+            </div>
           )}
         </section>
       )}
 
       {error && (
-        <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+        <Banner tone="critical" className="mt-4">
           {error}
-        </p>
+        </Banner>
       )}
 
       <div className="mt-6 flex gap-3">
         {step > 0 && (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            icon="chevronLeft"
             onClick={() => setStep(step - 1)}
-            className="rounded-xl border border-gray-200 bg-white px-6 py-3.5 font-medium text-gray-600"
           >
             Quay lại
-          </button>
+          </Button>
         )}
         {step < 2 ? (
-          <button
-            type="button"
+          <Button
+            full
             disabled={step === 0 && !step1Valid}
             onClick={() => setStep(step + 1)}
-            className="flex-1 rounded-xl bg-green-600 py-3.5 font-semibold text-white transition active:scale-[0.98] disabled:opacity-40"
           >
             Tiếp tục
-          </button>
+          </Button>
         ) : (
-          <button
-            type="button"
-            disabled={!budgetValid || saving}
+          <Button
+            full
+            icon="check"
+            disabled={!budgetValid}
+            loading={saving}
             onClick={onFinish}
-            className="flex-1 rounded-xl bg-green-600 py-3.5 font-semibold text-white transition active:scale-[0.98] disabled:opacity-40"
           >
-            {saving ? "Đang lưu..." : "Hoàn tất 🎉"}
-          </button>
+            {saving ? "Đang lưu" : "Xong, vào bếp"}
+          </Button>
         )}
       </div>
     </main>

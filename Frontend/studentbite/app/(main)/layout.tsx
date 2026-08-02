@@ -3,10 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import SideNav from "@/components/SideNav";
 import TabBar from "@/components/TabBar";
+import Icon from "@/components/ui/Icon";
 import { useMe } from "@/lib/hooks";
 
-/** Layout cho các tab chính: yêu cầu đăng nhập + tab bar dưới cùng. */
+/**
+ * Layout cho các tab chính: yêu cầu đăng nhập, rồi dựng khung theo màn hình —
+ * cột 480px + tab bar dưới cùng trên điện thoại, thanh bên + nội dung rộng
+ * trên desktop.
+ */
 export default function MainLayout({
   children,
 }: {
@@ -22,18 +28,29 @@ export default function MainLayout({
   if (isLoading || user === null) {
     return (
       <div className="flex min-h-dvh items-center justify-center">
-        <div className="text-center">
-          <div className="animate-bounce text-4xl">🍚</div>
-          <p className="mt-2 text-sm text-gray-400">Đang tải...</p>
+        <div className="text-center" role="status">
+          <Icon
+            name="bowl"
+            className="mx-auto size-10 text-sign"
+            strokeWidth={1.8}
+          />
+          <p className="disp mt-3 text-[0.7rem] tracking-[0.2em] text-panel/50">
+            Đang dọn bàn
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="pb-24">{children}</div>
+    <div className="lg:flex lg:min-h-dvh">
+      <SideNav />
+      <div className="min-w-0 flex-1">
+        <div className="mx-auto w-full max-w-120 pb-24 md:max-w-215 lg:max-w-295 lg:pb-12">
+          {children}
+        </div>
+      </div>
       <TabBar />
-    </>
+    </div>
   );
 }

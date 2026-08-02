@@ -1,18 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f7f8f6;
-  --foreground: #1a1d1a;
-  --primary: #16a34a;
-  --primary-dark: #15803d;
+/* ============================================================
+   StudentBites — hướng nhận diện "Bảng Hiệu"
+   Lấy chất liệu từ bảng hiệu quán cơm sơn men: nền xanh men,
+   chữ vàng, giá đỏ, viền đen dày, bóng đổ cứng (không blur).
+   App cam kết một tông màu duy nhất — đây là lựa chọn thiết kế,
+   không phải thiếu dark mode.
+   ============================================================ */
+
+@theme {
+  /* --- Nền & mực --- */
+  --color-enamel: #0c4a4e;
+  --color-enamel-deep: #08383c;
+  --color-ink: #06282b;
+  --color-panel: #fbf4e2;
+  --color-panel-dim: #e8dfc7;
+
+  /* --- Màu sơn --- */
+  --color-sign: #ffce2e;
+  --color-sign-deep: #e5af12;
+  --color-chili: #ee3b2e;
+  --color-chili-deep: #c22a1e;
+  --color-mango: #f08c2e;
+  --color-mint: #5fc4a8;
+
+  /* --- Chữ --- */
+  --font-display: var(--font-anton), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
+
+  /* --- Bóng đổ cứng, không blur --- */
+  --shadow-hard: 4px 4px 0 var(--color-ink);
+  --shadow-hard-sm: 3px 3px 0 var(--color-ink);
+  --shadow-hard-deep: 5px 5px 0 var(--color-enamel-deep);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: dark;
 }
 
 html,
@@ -21,10 +44,16 @@ body {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background: var(--color-enamel);
+  color: var(--color-panel);
+  font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* Số liệu luôn thẳng cột */
+.num {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Safe area cho iOS (tab bar dưới cùng) */
@@ -39,4 +68,102 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Bàn phím: viền focus phải luôn nhìn thấy trên mọi nền */
+:focus-visible {
+  outline: 3px solid var(--color-sign);
+  outline-offset: 2px;
+}
+
+@layer components {
+  /* Chữ tiêu đề kiểu bảng hiệu: in hoa, nét đậm, giãn nhẹ */
+  .disp {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1.05;
+  }
+
+  /* Cùng mặt chữ nhưng KHÔNG in hoa — dành cho tiền và đơn vị.
+     "12.000đ" mà in hoa thành "12.000Đ" là sai ký hiệu tiền đồng,
+     "128.7g" thành "128.7G" cũng sai đơn vị. */
+  .disp-num {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Nhãn nhỏ in hoa, giãn rộng — dùng cho eyebrow, tên cột */
+  .label {
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* Tấm biển sơn: viền dày + bóng cứng + đường viền trong */
+  .panel {
+    position: relative;
+    border: 3px solid var(--color-ink);
+    box-shadow: var(--shadow-hard-deep);
+  }
+  .panel::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 35%, transparent);
+    pointer-events: none;
+  }
+
+  /* Thẻ nội dung nền kem, viền mảnh hơn tấm biển chính */
+  .card-sign {
+    border: 2px solid var(--color-ink);
+    background: var(--color-panel);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-hard-deep);
+  }
+
+  /* Hiệu ứng bấm: đè tấm biển xuống đúng bằng độ dày bóng */
+  .press {
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease;
+  }
+  .press:active:not(:disabled) {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--color-ink);
+  }
+
+  /* Vạch phân dòng trong bảng menu */
+  .rule-soft {
+    border-top: 1px solid color-mix(in srgb, var(--color-panel) 16%, transparent);
+  }
+}
+
+/* Loading nhấp nháy — nhẹ, không chớp gắt */
+@keyframes sb-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.sb-pulse {
+  animation: sb-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
