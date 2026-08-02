@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 interface IProps {
   /** Tiêu đề của form, hiện ở cột phải. */
   title: string;
@@ -25,7 +27,11 @@ export default function AuthShell({
       {/* Nửa biển hiệu */}
       <div className="flex items-center justify-center bg-enamel-deep px-5 py-10 lg:min-h-dvh lg:px-12">
         <div className="anim-rise w-full max-w-md">
-          <div className="sign-float panel bg-sign px-5 py-6 text-center text-ink lg:px-8 lg:py-10">
+          <Link
+            href="/"
+            className="sign-float panel block bg-sign px-5 py-6 text-center text-ink lg:px-8 lg:py-10"
+            aria-label="Về trang chủ StudentBites"
+          >
             <p className="disp text-[2rem] leading-none lg:text-[3.2rem]">
               StudentBites
             </p>
@@ -33,7 +39,7 @@ export default function AuthShell({
             <p className="text-[0.72rem] font-bold tracking-wide lg:text-[0.9rem]">
               Ăn đủ chất · Vừa túi tiền sinh viên
             </p>
-          </div>
+          </Link>
           <ul className="stagger-in mt-6 hidden space-y-2 text-[0.85rem] text-panel/65 lg:block">
             <li>Thực đơn tự lên, đủ đạm mà không vượt hạn mức ngày.</li>
             <li>Ghi lại từng bữa, biết tháng này còn tiêu được bao nhiêu.</li>
