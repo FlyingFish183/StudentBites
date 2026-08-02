@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+import ChatBox from "@/components/ChatBox";
 import SideNav from "@/components/SideNav";
 import TabBar from "@/components/TabBar";
 import Icon from "@/components/ui/Icon";
@@ -51,6 +52,7 @@ export default function MainLayout({
         </div>
       </div>
       <TabBar />
+      <ChatBox />
     </div>
   );
 }

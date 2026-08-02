@@ -27,8 +27,10 @@ export default function Segmented<T extends string>({
             type="button"
             aria-selected={active}
             onClick={() => onChange(key)}
-            className={`disp py-2.5 text-[0.68rem] tracking-widest transition-colors ${
-              active ? "bg-sign text-ink" : "text-panel/55 hover:text-panel"
+            className={`disp py-2.5 text-[0.68rem] tracking-widest transition-[background-color,color,transform] duration-150 ${
+              active
+                ? "bg-sign text-ink"
+                : "text-panel/55 hover:scale-[1.02] hover:text-panel"
             }`}
           >
             {label}

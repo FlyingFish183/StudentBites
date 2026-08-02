@@ -9,6 +9,7 @@ import { getCrawlQueue } from '@src/queue/queues';
 
 import AdminRoutes from './AdminRoutes';
 import AuthRoutes from './AuthRoutes';
+import ChatRoutes from './ChatRoutes';
 import { requireAdmin } from './common/admin-auth';
 import { requireAuth } from './common/auth';
 import LogRoutes from './LogRoutes';
@@ -95,6 +96,14 @@ storesRouter.get(Paths.Stores.Geocode, StoreRoutes.geocode);
 storesRouter.get(Paths.Stores.Compare, StoreRoutes.compare);
 
 apiRouter.use(Paths.Stores._, requireAuth, storesRouter);
+
+// ----------------------- Chat (OpenAI assistant) ------------------------ //
+
+const chatRouter = Router();
+
+chatRouter.post(Paths.Chat.Send, ChatRoutes.send);
+
+apiRouter.use(Paths.Chat._, requireAuth, chatRouter);
 
 // ----------------------- Admin ------------------------------------------ //
 

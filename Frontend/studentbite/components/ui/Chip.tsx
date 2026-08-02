@@ -14,9 +14,9 @@ export default function Chip({
       type="button"
       aria-pressed={active}
       {...rest}
-      className={`disp shrink-0 border-2 px-3 py-2 text-[0.62rem] tracking-[0.08em] transition-colors ${
+      className={`disp chip-pop shrink-0 border-2 px-3 py-2 text-[0.62rem] tracking-[0.08em] ${
         active
-          ? "border-sign bg-sign text-ink"
+          ? "border-sign bg-sign text-ink shadow-hard-sm"
           : "border-panel/30 bg-transparent text-panel/65 hover:border-panel/55 hover:text-panel"
       } ${className}`}
     >

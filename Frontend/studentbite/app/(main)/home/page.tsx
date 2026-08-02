@@ -166,7 +166,7 @@ export default function DashboardPage() {
       />
 
       <div className="px-4 pt-4 lg:px-6 lg:pt-6">
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <div className="stagger-in grid gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {/* Số dư ngày — tấm biển duy nhất của màn hình */}
           <section>
             {stats ? (

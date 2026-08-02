@@ -24,7 +24,7 @@ export default function MealRow({
 }: IProps) {
   return (
     <div
-      className={`rule-soft flex items-center gap-3 py-2.5 first:border-t-0 ${
+      className={`rule-soft row-hover flex items-center gap-3 py-2.5 first:border-t-0 ${
         muted ? "opacity-55" : ""
       }`}
     >

@@ -10,10 +10,10 @@ interface IProps {
 /** Trạng thái rỗng: nói rõ đang thiếu gì và làm gì tiếp theo. */
 export default function EmptyState({ icon, title, hint, action }: IProps) {
   return (
-    <div className="border-2 border-dashed border-panel/25 px-5 py-8 text-center">
+    <div className="anim-rise-sm border-2 border-dashed border-panel/25 px-5 py-8 text-center">
       <Icon
         name={icon}
-        className="mx-auto size-9 text-panel/35"
+        className="mx-auto size-9 text-panel/35 transition-transform duration-300 hover:scale-110"
         strokeWidth={1.6}
       />
       <p className="disp mt-3 text-[0.95rem] text-panel/85">{title}</p>

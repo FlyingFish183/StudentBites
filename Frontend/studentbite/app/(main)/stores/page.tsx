@@ -142,7 +142,7 @@ export default function StoresPage() {
     <main>
       <PageHeader title="Đi chợ" aside="Nguyên liệu của thực đơn hôm nay" />
 
-      <div className="grid gap-6 px-4 pt-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:px-6 lg:pt-5">
+      <div className="anim-rise-sm anim-delay-1 stagger-in grid gap-6 px-4 pt-3 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-start lg:gap-8 lg:px-6 lg:pt-5">
       <div>
       {/* Vị trí */}
       <div className="pb-3">

@@ -28,7 +28,9 @@ export type IconName =
   | "close"
   | "trash"
   | "chart"
-  | "user";
+  | "user"
+  | "chat"
+  | "send";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   home: <path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-6v6H4.5a1 1 0 0 1-1-1z" />,
@@ -119,6 +121,13 @@ const PATHS: Record<IconName, React.ReactNode> = {
       <path d="M4.8 20.5c1.1-3.7 3.8-5.6 7.2-5.6s6.1 1.9 7.2 5.6" />
     </>
   ),
+  chat: (
+    <>
+      <path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H10l-4.5 3v-3H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z" />
+      <path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01" strokeWidth="2.6" strokeLinecap="round" />
+    </>
+  ),
+  send: <path d="M4 12h13M12 6l6 6-6 6" />,
 };
 
 interface IProps {

@@ -23,7 +23,9 @@ export default function SignPanel({
   children,
 }: IProps) {
   return (
-    <div className={`panel ${TONES[tone]} px-4 py-4 ${className}`}>
+    <div
+      className={`panel panel-hover anim-rise ${TONES[tone]} px-4 py-4 ${className}`}
+    >
       {children}
     </div>
   );

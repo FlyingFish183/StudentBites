@@ -23,8 +23,8 @@ export default function TabBar() {
                 key={tab.href}
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className={`disp flex flex-col items-center gap-1 py-2.5 text-[0.58rem] tracking-[0.08em] transition-colors ${
-                  active ? "text-sign" : "text-panel/45"
+                className={`disp flex flex-col items-center gap-1 py-2.5 text-[0.58rem] tracking-[0.08em] transition-[color,transform] duration-150 ${
+                  active ? "text-sign" : "text-panel/45 hover:-translate-y-0.5 hover:text-panel/70"
                 }`}
               >
                 <Icon

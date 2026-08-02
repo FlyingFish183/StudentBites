@@ -180,10 +180,11 @@ body {
   background: color-mix(in srgb, var(--color-enamel-deep) 42%, transparent);
 }
 
-@keyframes landing-rise {
+/* ---- Shared page motion (auth + app routes) ---- */
+@keyframes sb-rise {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -191,8 +192,204 @@ body {
   }
 }
 
-.landing-rise {
-  animation: landing-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes sb-rise-sm {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sb-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sb-sign-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes sb-rule-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sb-meter-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes sb-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.landing-rise,
+.anim-rise {
+  animation: sb-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-rise-sm {
+  animation: sb-rise-sm 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-fade {
+  animation: sb-fade 0.5s ease both;
+}
+
+.anim-delay-1 {
+  animation-delay: 80ms;
+}
+.anim-delay-2 {
+  animation-delay: 160ms;
+}
+.anim-delay-3 {
+  animation-delay: 240ms;
+}
+.anim-delay-4 {
+  animation-delay: 320ms;
+}
+.anim-delay-5 {
+  animation-delay: 400ms;
+}
+
+/* Stagger direct children on enter */
+.stagger-in > * {
+  animation: sb-rise-sm 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-in > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+.stagger-in > *:nth-child(2) {
+  animation-delay: 100ms;
+}
+.stagger-in > *:nth-child(3) {
+  animation-delay: 160ms;
+}
+.stagger-in > *:nth-child(4) {
+  animation-delay: 220ms;
+}
+.stagger-in > *:nth-child(5) {
+  animation-delay: 280ms;
+}
+.stagger-in > *:nth-child(6) {
+  animation-delay: 340ms;
+}
+.stagger-in > *:nth-child(n + 7) {
+  animation-delay: 400ms;
+}
+
+.sign-float {
+  animation: sb-sign-float 4.5s ease-in-out infinite;
+}
+
+.rule-grow {
+  transform-origin: left center;
+  animation: sb-rule-grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.meter-fill {
+  transform-origin: left center;
+  animation: sb-meter-grow 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-shake {
+  animation: sb-shake 0.4s ease;
+}
+
+/* Interactive enamel panels / rows */
+.panel-hover {
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease;
+}
+
+.panel-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--color-ink);
+}
+
+.row-hover {
+  transition:
+    background-color 160ms ease,
+    padding-left 160ms ease,
+    opacity 160ms ease;
+}
+
+.row-hover:hover {
+  background-color: color-mix(in srgb, var(--color-panel) 6%, transparent);
+  padding-left: 0.35rem;
+}
+
+.chip-pop {
+  transition:
+    transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.chip-pop:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.chip-pop:active:not(:disabled) {
+  transform: translate(2px, 2px);
+}
+
+.select-pop {
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.select-pop:hover:not([aria-pressed="true"]) {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-sign) 55%, transparent);
+}
+
+.select-pop[aria-pressed="true"] {
+  transform: translateY(-1px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -204,7 +401,19 @@ body {
     transition-duration: 0.001ms !important;
   }
 
-  .glass-hover:hover {
+  .glass-hover:hover,
+  .panel-hover:hover,
+  .chip-pop:hover:not(:disabled),
+  .select-pop:hover:not([aria-pressed="true"]),
+  .select-pop[aria-pressed="true"] {
     transform: none;
+  }
+
+  .row-hover:hover {
+    padding-left: 0;
+  }
+
+  .sign-float {
+    animation: none;
   }
 }

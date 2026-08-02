@@ -46,6 +46,10 @@ const Paths = {
     Geocode: '/geocode',
     Compare: '/compare',
   },
+  Chat: {
+    _: '/chat',
+    Send: '/',
+  },
   Admin: {
     _: '/admin',
     Models: '/models',

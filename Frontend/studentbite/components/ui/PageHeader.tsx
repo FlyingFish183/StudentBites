@@ -19,7 +19,7 @@ export default function PageHeader({
   actions,
 }: IProps) {
   return (
-    <header className="flex items-center justify-between gap-3 bg-enamel-deep px-4 py-3 lg:mb-2 lg:border-b-2 lg:border-panel/12 lg:bg-transparent lg:px-6 lg:pt-9 lg:pb-5">
+    <header className="anim-rise flex items-center justify-between gap-3 bg-enamel-deep px-4 py-3 lg:mb-2 lg:border-b-2 lg:border-panel/12 lg:bg-transparent lg:px-6 lg:pt-9 lg:pb-5">
       <div className="min-w-0">
         {eyebrow && (
           <p className="label truncate text-panel/50 lg:mb-1.5">{eyebrow}</p>

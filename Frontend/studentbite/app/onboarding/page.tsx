@@ -90,7 +90,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-140 flex-col px-5 py-7 lg:max-w-170 lg:py-14">
+    <main className="anim-rise mx-auto flex min-h-dvh w-full max-w-140 flex-col px-5 py-7 lg:max-w-170 lg:py-14">
       {/* Bước hiện tại */}
       <div className="mb-7 flex items-start gap-1.5">
         {STEPS.map((label, i) => (
