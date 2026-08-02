@@ -29,8 +29,14 @@ export interface ICrawlResult {
   sourceSite: string;
   /** Số sản phẩm bóc được từ HTML */
   productsFound: number;
+  /** Số sản phẩm ghi được vào bảng Product */
+  saved: number;
   /** Số sản phẩm khớp được về một Ingredient */
   matched: number;
+  /** Số sản phẩm giá đổi so với lần trước */
+  priceChanged: number;
+  /** Số sản phẩm không đọc được khối lượng nên chưa so giá được */
+  noWeight: number;
 }
 
 /******************************************************************************
@@ -53,12 +59,13 @@ export async function runCrawler(sourceSite: string): Promise<ICrawlResult> {
   }
   logger.info(`[crawler] Bắt đầu crawl ${sourceSite}...`);
   const products = await crawler.crawl();
-  const matched = await saveProducts(sourceSite, products);
+  const saved = await saveProducts(sourceSite, products);
   logger.info(
-    `[crawler] ${sourceSite}: lấy được ${products.length} sản phẩm, ` +
-    `match ${matched} nguyên liệu`,
+    `[crawler] ${sourceSite}: bóc được ${products.length} sản phẩm, ` +
+    `lưu ${saved.saved}, map ${saved.matched} nguyên liệu, ` +
+    `${saved.priceChanged} giá đổi, ${saved.noWeight} không rõ khối lượng`,
   );
-  return { sourceSite, productsFound: products.length, matched };
+  return { sourceSite, productsFound: products.length, ...saved };
 }
 
 /**

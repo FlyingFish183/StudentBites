@@ -182,36 +182,47 @@ async function compare(userId: number, dateStr: string) {
   }
 
   const ingredientIds = [...needed.keys()];
-  const prices = await prisma.ingredientPrice.findMany({
-    where: { ingredientId: { in: ingredientIds } },
+
+  // Giá luôn thuộc về Product; giá của nguyên liệu là suy ra. Chỉ lấy hàng
+  // còn bán và đã đọc được khối lượng — thiếu pricePerGram thì không so được.
+  const products = await prisma.product.findMany({
+    where: {
+      ingredientId: { in: ingredientIds },
+      isInStock: true,
+      pricePerGram: { not: null },
+    },
     include: { store: true },
-    orderBy: { crawledAt: 'desc' },
+    orderBy: { pricePerGram: 'asc' },
   });
 
-  // Với mỗi nguyên liệu: giá tốt nhất + giá từng nguồn
+  // Với mỗi nguyên liệu: mỗi cửa hàng giữ đúng một chào giá rẻ nhất
   const items = ingredientIds.map((ingId) => {
     const info = needed.get(ingId)!;
-    const ingPrices = prices.filter((p) => p.ingredientId === ingId);
-    // chỉ giữ giá mới nhất của mỗi store
-    const seen = new Set<number>();
-    const latest = ingPrices.filter((p) => {
-      if (seen.has(p.storeId)) return false;
-      seen.add(p.storeId);
-      return true;
-    });
-    const offers = latest
-      .map((p) => ({
-        storeId: p.storeId,
-        storeName: p.store.name,
-        sourceSite: p.store.sourceSite,
-        productName: p.productName,
-        productUrl: p.productUrl,
-        // chi phí ước tính cho đúng lượng cần mua
-        estimatedCost: Math.round(p.pricePerUnit * info.grams),
-        pricePer100g: Math.round(p.pricePerUnit * 100),
-        crawledAt: p.crawledAt,
-      }))
+    const forIngredient = products.filter((p) => p.ingredientId === ingId);
+
+    const cheapestPerStore = new Map<number, (typeof products)[number]>();
+    for (const p of forIngredient) {
+      // products đã sắp theo pricePerGram tăng dần nên gặp trước là rẻ nhất
+      if (!cheapestPerStore.has(p.storeId)) cheapestPerStore.set(p.storeId, p);
+    }
+
+    const offers = [...cheapestPerStore.values()]
+      .map((p) => {
+        const perGram = Number(p.pricePerGram);
+        return {
+          storeId: p.storeId,
+          storeName: p.store.name,
+          sourceSite: p.store.sourceSite,
+          productName: p.name,
+          productUrl: p.url,
+          // chi phí ước tính cho đúng lượng cần mua
+          estimatedCost: Math.round(perGram * info.grams),
+          pricePer100g: Math.round(perGram * 100),
+          crawledAt: p.lastSeenAt,
+        };
+      })
       .sort((a, b) => a.estimatedCost - b.estimatedCost);
+
     return {
       ingredientId: ingId,
       name: info.name,
@@ -224,7 +235,12 @@ async function compare(userId: number, dateStr: string) {
   // Tổng tiền nếu mua tất cả tại từng nguồn
   const storeTotals = new Map<
     number,
-    { storeName: string; sourceSite: string | null; total: number; itemCount: number }
+    {
+      storeName: string;
+      sourceSite: string | null;
+      total: number;
+      itemCount: number;
+    }
   >();
   for (const item of items) {
     for (const offer of item.offers) {

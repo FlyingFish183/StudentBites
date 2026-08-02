@@ -4,7 +4,13 @@
  *
  * Chạy: npm run db:seed
  */
-import { MealType, PrismaClient, StoreType } from '@prisma/client';
+import {
+  MatchSource,
+  MealType,
+  Prisma,
+  PrismaClient,
+  StoreType,
+} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -65,6 +71,46 @@ const INGREDIENTS: IngredientSeed[] = [
 
 // factor: chênh lệch giá tương đối giữa các nguồn (dữ liệu seed ban đầu,
 // crawler sẽ cập nhật giá thật sau)
+/**
+ * Danh mục của từng sàn. Đường dẫn đo ngày 2026-08-02 — xem
+ * docs/crawler/01-khao-sat.md.
+ */
+const STORE_CATEGORIES: Record<
+  string,
+  { path: string; name: string; isActive?: boolean; note?: string }[]
+> = {
+  bachhoaxanh: [
+    { path: '/thit-heo', name: 'Thịt heo' },
+    { path: '/thit-ga', name: 'Thịt gà' },
+    { path: '/thit-bo', name: 'Thịt bò' },
+    { path: '/ca-tom-muc-ech', name: 'Cá, tôm, mực' },
+    { path: '/trung-ga-vit-cut', name: 'Trứng' },
+    { path: '/rau-la', name: 'Rau lá' },
+    { path: '/cu-qua', name: 'Củ quả' },
+    { path: '/trai-cay', name: 'Trái cây' },
+    { path: '/gao-cac-loai', name: 'Gạo' },
+    { path: '/dau-hu-tau-hu', name: 'Đậu hũ' },
+  ],
+  winmart: [
+    {
+      path: '/categories/thit-1980',
+      name: 'Thịt',
+      isActive: false,
+      note: '404 ngày 2026-08-02, sàn đã đổi cấu trúc URL — xem C-02',
+    },
+  ],
+  coopmart: [
+    { path: '/c/thit-heo', name: 'Thịt heo' },
+    { path: '/c/thit-gia-cam', name: 'Thịt gia cầm' },
+    { path: '/c/thit-bo', name: 'Thịt bò' },
+    { path: '/c/thuy-hai-san', name: 'Thủy hải sản' },
+    { path: '/c/trung', name: 'Trứng' },
+    { path: '/c/rau-cu', name: 'Rau củ' },
+    { path: '/c/trai-cay', name: 'Trái cây' },
+    { path: '/c/gao-nong-san', name: 'Gạo, nông sản' },
+  ],
+};
+
 const ONLINE_STORES = [
   { name: 'Bách Hóa Xanh (Online)', sourceSite: 'bachhoaxanh', factor: 1.0 },
   { name: 'WinMart (Online)', sourceSite: 'winmart', factor: 1.06 },
@@ -148,39 +194,60 @@ async function main() {
     ingredientByName.set(ing.name, { id: row.id, seed: ing });
   }
 
-  // 2) Online stores + seed prices
+  // 2) Nguồn crawl + danh mục + sản phẩm tham khảo
+  //
+  // Sản phẩm seed đóng vai trò giá dự phòng: crawler chết thì màn so giá vẫn
+  // có dữ liệu. Đánh dấu matchSource = MANUAL để lượt crawl sau không map đè.
   for (const store of ONLINE_STORES) {
     const storeRow = await prisma.store.upsert({
-      where: { osmId: `online-${store.sourceSite}` },
-      update: { name: store.name },
+      where: { code: store.sourceSite },
+      update: { name: store.name, sourceSite: store.sourceSite },
       create: {
         name: store.name,
         type: StoreType.ONLINE,
         sourceSite: store.sourceSite,
+        code: store.sourceSite,
         osmId: `online-${store.sourceSite}`,
       },
     });
+
+    // Danh mục: trước đây nằm cứng trong từng file crawler, giờ ở DB để sửa
+    // URL ngay trên trang quản trị khi sàn đổi cấu trúc.
+    for (const cat of STORE_CATEGORIES[store.sourceSite] ?? []) {
+      await prisma.storeCategory.upsert({
+        where: { storeId_path: { storeId: storeRow.id, path: cat.path } },
+        update: { name: cat.name },
+        create: {
+          storeId: storeRow.id,
+          path: cat.path,
+          name: cat.name,
+          isActive: cat.isActive ?? true,
+          note: cat.note,
+        },
+      });
+    }
+
     for (const ing of INGREDIENTS) {
       const { id } = ingredientByName.get(ing.name)!;
       const price = Math.round((ing.basePricePerKg * store.factor) / 500) * 500;
-      const productName = `${ing.name} 1kg (giá tham khảo)`;
-      await prisma.ingredientPrice.upsert({
-        where: {
-          ingredientId_storeId_productName: {
-            ingredientId: id,
-            storeId: storeRow.id,
-            productName,
-          },
-        },
-        update: { price, unitQty: 1000, pricePerUnit: price / 1000 },
-        create: {
-          ingredientId: id,
-          storeId: storeRow.id,
-          productName,
-          price,
-          unitQty: 1000,
-          pricePerUnit: price / 1000,
-        },
+      const sku = `seed-${ing.name.toLowerCase().replace(/\s+/g, '-')}`;
+      const data = {
+        storeId: storeRow.id,
+        sku,
+        name: `${ing.name} 1kg (giá tham khảo)`,
+        currentPrice: new Prisma.Decimal(price),
+        isInStock: true,
+        rawUnit: '1kg',
+        baseWeightGrams: 1000,
+        pricePerGram: new Prisma.Decimal(price / 1000),
+        ingredientId: id,
+        matchSource: MatchSource.MANUAL,
+        metadata: { seed: true, note: 'giá tham khảo, không phải giá crawl' },
+      };
+      await prisma.product.upsert({
+        where: { storeId_sku: { storeId: storeRow.id, sku } },
+        update: data,
+        create: data,
       });
     }
   }
@@ -237,7 +304,8 @@ async function main() {
   const counts = {
     ingredients: await prisma.ingredient.count(),
     stores: await prisma.store.count(),
-    prices: await prisma.ingredientPrice.count(),
+    categories: await prisma.storeCategory.count(),
+    products: await prisma.product.count(),
     dishes: await prisma.dish.count(),
   };
   // eslint-disable-next-line no-console
