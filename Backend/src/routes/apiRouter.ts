@@ -2,7 +2,9 @@ import { Router } from 'express';
 
 import Paths from '@src/common/constants/Paths';
 
+import AdminRoutes from './AdminRoutes';
 import AuthRoutes from './AuthRoutes';
+import { requireAdmin } from './common/admin-auth';
 import { requireAuth } from './common/auth';
 import LogRoutes from './LogRoutes';
 import PlannerRoutes from './PlannerRoutes';
@@ -87,6 +89,22 @@ storesRouter.get(Paths.Stores.Geocode, StoreRoutes.geocode);
 storesRouter.get(Paths.Stores.Compare, StoreRoutes.compare);
 
 apiRouter.use(Paths.Stores._, requireAuth, storesRouter);
+
+// ----------------------- Admin ------------------------------------------ //
+
+const adminRouter = Router();
+
+adminRouter.get(Paths.Admin.Models, AdminRoutes.listModels);
+// Options phải đứng trước :id, nếu không "options" bị hiểu là một id.
+adminRouter.get(Paths.Admin.Options, AdminRoutes.options);
+adminRouter.get(Paths.Admin.List, AdminRoutes.list);
+adminRouter.get(Paths.Admin.GetOne, AdminRoutes.getOne);
+adminRouter.post(Paths.Admin.Create, AdminRoutes.create);
+adminRouter.put(Paths.Admin.Update, AdminRoutes.update);
+adminRouter.delete(Paths.Admin.Delete, AdminRoutes.remove);
+
+// requireAdmin đứng sau requireAuth: phải đăng nhập rồi mới xét quyền.
+apiRouter.use(Paths.Admin._, requireAuth, requireAdmin, adminRouter);
 
 /******************************************************************************
                                 Export

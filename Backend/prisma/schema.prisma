@@ -39,6 +39,12 @@ enum StoreType {
   ONLINE // website TMĐT
 }
 
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
 /// ------------------------------- Models ------------------------------- ///
 
 model User {
@@ -154,6 +160,22 @@ model MealPlanItem {
   dishId        Int
   dish          Dish     @relation(fields: [dishId], references: [id])
   estimatedCost Int // VND, chốt tại thời điểm tạo plan
+}
+
+/// Nhật ký thao tác của khu quản trị. Chỉ ghi thêm, không sửa không xoá —
+/// nhật ký sửa được thì không còn là nhật ký.
+model AdminAuditLog {
+  id         Int         @id @default(autoincrement())
+  actorId    Int // id người thực hiện, không đặt quan hệ để xoá user vẫn giữ vết
+  actorEmail String
+  action     AuditAction
+  model      String // tên bảng bị tác động
+  recordId   String // id bản ghi, để chuỗi cho hợp mọi kiểu khoá
+  changes    Json? // CREATE: dữ liệu tạo · UPDATE: {truoc, sau} · DELETE: bản ghi cũ
+  createdAt  DateTime    @default(now())
+
+  @@index([model, recordId])
+  @@index([createdAt])
 }
 
 model MealLog {
