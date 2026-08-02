@@ -45,6 +45,7 @@ const Paths = {
     Nearby: '/nearby',
     Geocode: '/geocode',
     Compare: '/compare',
+    Search: '/search',
   },
   Chat: {
     _: '/chat',

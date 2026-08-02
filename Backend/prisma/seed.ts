@@ -32,8 +32,8 @@ interface IngredientSeed {
 const INGREDIENTS: IngredientSeed[] = [
   // --- Protein ---
   { name: 'Trứng gà', category: 'protein', protein: 13, carb: 1.1, fat: 11, kcal: 155, basePricePerKg: 35000, keywords: ['trứng gà', 'trứng'] },
-  { name: 'Ức gà', category: 'protein', protein: 31, carb: 0, fat: 3.6, kcal: 165, basePricePerKg: 75000, keywords: ['ức gà', 'ức gà phi lê', 'gà phi lê'] },
-  { name: 'Đùi gà', category: 'protein', protein: 26, carb: 0, fat: 8, kcal: 209, basePricePerKg: 58000, keywords: ['đùi gà', 'má đùi'] },
+  { name: 'Ức gà', category: 'protein', protein: 31, carb: 0, fat: 3.6, kcal: 165, basePricePerKg: 75000, keywords: ['ức gà', 'ức gà phi lê', 'gà phi lê', 'thịt gà', 'gà'] },
+  { name: 'Đùi gà', category: 'protein', protein: 26, carb: 0, fat: 8, kcal: 209, basePricePerKg: 58000, keywords: ['đùi gà', 'má đùi', 'thịt gà', 'gà'] },
   { name: 'Thịt heo nạc', category: 'protein', protein: 27, carb: 0, fat: 14, kcal: 242, basePricePerKg: 115000, keywords: ['thịt heo', 'nạc heo', 'thịt nạc'] },
   { name: 'Thịt heo băm', category: 'protein', protein: 25, carb: 0, fat: 17, kcal: 263, basePricePerKg: 105000, keywords: ['heo xay', 'thịt xay', 'heo băm'] },
   { name: 'Thịt bò', category: 'protein', protein: 26, carb: 0, fat: 15, kcal: 250, basePricePerKg: 255000, keywords: ['thịt bò', 'bò úc', 'nạc bò'] },

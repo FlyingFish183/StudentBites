@@ -73,6 +73,29 @@ async function compare(req: Request, res: Response) {
   res.status(HttpStatusCodes.OK).json(result);
 }
 
+/**
+ * Tìm nguyên liệu theo từ khoá và so giá giữa 3 nguồn crawl.
+ *
+ * @route GET /api/stores/search?q=
+ */
+async function search(req: Request, res: Response) {
+  const q = req.query.q;
+  if (!isString(q)) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: 'Thiếu từ khoá tìm kiếm' });
+    return;
+  }
+  if (q.trim().length < 2) {
+    res
+      .status(HttpStatusCodes.BAD_REQUEST)
+      .json({ error: 'Từ khoá tìm kiếm quá ngắn' });
+    return;
+  }
+  const result = await StoreService.search(q);
+  res.status(HttpStatusCodes.OK).json(result);
+}
+
 /******************************************************************************
                             Export default
 ******************************************************************************/
@@ -81,4 +104,5 @@ export default {
   nearby,
   geocode,
   compare,
+  search,
 } as const;

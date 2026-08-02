@@ -172,6 +172,31 @@ export interface IPriceOffer {
   isReference?: boolean;
 }
 
+/** Chào giá khi tìm nguyên liệu (So giá) — không gắn lượng thực đơn. */
+export interface ISearchOffer {
+  storeId: number;
+  storeName: string;
+  sourceSite: string | null;
+  productName: string;
+  productUrl: string | null;
+  currentPrice: number | null;
+  rawUnit: string | null;
+  pricePer100g: number;
+  crawledAt: string;
+  isReference?: boolean;
+}
+
+export interface IPriceSearchResult {
+  query: string;
+  items: {
+    ingredientId: number;
+    name: string;
+    category: string;
+    bestOffer: ISearchOffer | null;
+    offers: ISearchOffer[];
+  }[];
+}
+
 export interface ICompareResult {
   date: string;
   items: {
