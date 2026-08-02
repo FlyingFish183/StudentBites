@@ -45,14 +45,21 @@ enum AuditAction {
   DELETE
 }
 
+enum CrawlStatus {
+  RUNNING // đang chạy
+  SUCCESS // mọi danh mục đều lấy được
+  PARTIAL // có danh mục hỏng nhưng vẫn lấy được dữ liệu
+  FAILED // không lấy được gì
+}
+
 /// ------------------------------- Models ------------------------------- ///
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
   passwordHash String
   name         String
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime   @default(now())
   profile      Profile?
   mealPlans    MealPlan[]
   mealLogs     MealLog[]
@@ -73,29 +80,35 @@ model Profile {
 }
 
 model Ingredient {
-  id              Int              @id @default(autoincrement())
-  name            String           @unique
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
   category        String // protein / carb / rau củ / gia vị ...
-  unit            String @default("g") // đơn vị cơ bản
+  unit            String            @default("g") // đơn vị cơ bản
   proteinPer100g  Float
   carbPer100g     Float
   fatPer100g      Float
   kcalPer100g     Float
-  keywords        String[] @default([]) // dùng để match sản phẩm khi crawl
+  keywords        String[]          @default([]) // dùng để match sản phẩm khi crawl
   dishIngredients DishIngredient[]
   prices          IngredientPrice[]
+  priceHistory    PriceHistory[]
 }
 
 model Store {
-  id         Int               @id @default(autoincrement())
-  name       String
-  type       StoreType
-  address    String?
-  lat        Float?
-  lng        Float?
-  sourceSite String? // bachhoaxanh | winmart | coopmart | osm
-  osmId      String?           @unique // id từ OpenStreetMap nếu có
-  prices     IngredientPrice[]
+  id           Int               @id @default(autoincrement())
+  name         String
+  type         StoreType
+  address      String?
+  lat          Float?
+  lng          Float?
+  sourceSite   String? // bachhoaxanh | winmart | coopmart | osm
+  /// Định danh ổn định của một nguồn crawl. Null với cửa hàng lấy từ OSM.
+  /// Có cột này thì crawler tra cửa hàng bằng findUnique thay vì findFirst
+  /// trên sourceSite (không unique nên kết quả không xác định).
+  code         String?           @unique
+  osmId        String?           @unique // id từ OpenStreetMap nếu có
+  prices       IngredientPrice[]
+  priceHistory PriceHistory[]
 }
 
 model IngredientPrice {
@@ -160,6 +173,65 @@ model MealPlanItem {
   dishId        Int
   dish          Dish     @relation(fields: [dishId], references: [id])
   estimatedCost Int // VND, chốt tại thời điểm tạo plan
+}
+
+/// Một lượt crawl của MỘT nguồn. Mỗi lần chạy runner sinh ra 3 dòng (mỗi
+/// site một dòng), nhờ vậy trả lời được "hôm nay site nào hỏng, từ bao giờ".
+model CrawlRun {
+  id            Int             @id @default(autoincrement())
+  sourceSite    String // trùng Store.code
+  startedAt     DateTime        @default(now())
+  finishedAt    DateTime?
+  status        CrawlStatus     @default(RUNNING)
+  productsFound Int             @default(0) // số sản phẩm bóc được từ HTML
+  matched       Int             @default(0) // số khớp được về Ingredient
+  pricesChanged Int             @default(0) // số giá thật sự khác lần trước
+  errorMessage  String? // lỗi ở mức toàn site
+  categories    CrawlCategory[]
+  priceHistory  PriceHistory[]
+
+  @@index([sourceSite, startedAt])
+  @@index([startedAt])
+}
+
+/// Kết quả từng danh mục trong một lượt crawl. Đây là chỗ trả lời câu
+/// "đường dẫn nào đang 404" mà không phải chạy lại crawler để xem log.
+model CrawlCategory {
+  id            Int      @id @default(autoincrement())
+  crawlRunId    Int
+  crawlRun      CrawlRun @relation(fields: [crawlRunId], references: [id], onDelete: Cascade)
+  path          String // đường dẫn tương đối trong CATEGORY_PATHS
+  url           String // URL đầy đủ đã gọi
+  httpStatus    Int? // null nếu lỗi mạng, không có phản hồi
+  productsFound Int      @default(0)
+  durationMs    Int?
+  errorMessage  String?
+
+  @@index([crawlRunId])
+}
+
+/// Lịch sử giá, chỉ ghi thêm không sửa. IngredientPrice giữ giá HIỆN TẠI
+/// (upsert, tra cứu nhanh cho màn so giá); bảng này giữ diễn biến theo thời
+/// gian để vẽ được "giá ức gà 30 ngày qua".
+///
+/// Chỉ ghi khi giá KHÁC lần quan sát gần nhất — crawl mỗi ngày mà giá đứng
+/// yên thì không sinh dòng mới.
+model PriceHistory {
+  id           Int        @id @default(autoincrement())
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  storeId      Int
+  store        Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  productName  String // tên sản phẩm gốc, giữ lại vì có thể đổi theo thời gian
+  price        Int // VND cho unitQty
+  unitQty      Float // gram
+  pricePerUnit Float // VND trên 1g — để so sánh và vẽ biểu đồ
+  crawlRunId   Int? // lượt crawl nào quan sát được, null nếu nhập tay/seed
+  crawlRun     CrawlRun?  @relation(fields: [crawlRunId], references: [id], onDelete: SetNull)
+  recordedAt   DateTime   @default(now())
+
+  @@index([ingredientId, storeId, recordedAt])
+  @@index([recordedAt])
 }
 
 /// Nhật ký thao tác của khu quản trị. Chỉ ghi thêm, không sửa không xoá —
