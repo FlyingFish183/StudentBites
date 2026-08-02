@@ -12,7 +12,7 @@ export default function TabBar() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-[1000] lg:hidden">
       <div className="pb-safe mx-auto w-full max-w-120 border-t-3 border-sign bg-enamel-deep md:max-w-215">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {NAV_ITEMS.map((tab) => {
             const active =
               tab.href === "/home"

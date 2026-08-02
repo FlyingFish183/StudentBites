@@ -94,6 +94,7 @@ const storesRouter = Router();
 storesRouter.get(Paths.Stores.Nearby, StoreRoutes.nearby);
 storesRouter.get(Paths.Stores.Geocode, StoreRoutes.geocode);
 storesRouter.get(Paths.Stores.Compare, StoreRoutes.compare);
+storesRouter.get(Paths.Stores.Search, StoreRoutes.search);
 
 apiRouter.use(Paths.Stores._, requireAuth, storesRouter);
 

@@ -301,6 +301,137 @@ async function compare(userId: number, dateStr: string) {
   };
 }
 
+const SEARCH_LIMIT = 20;
+
+/**
+ * Tìm nguyên liệu theo từ khoá tự do, rồi so giá rẻ nhất mỗi nguồn crawl
+ * (BHX / WinMart / Co.op) kèm link sản phẩm.
+ *
+ * Khớp qua: tên / keywords nguyên liệu, tên sản phẩm, tên danh mục cửa hàng.
+ */
+async function search(qRaw: string) {
+  const q = qRaw.trim();
+  if (q.length < 2) {
+    return { query: q, items: [] };
+  }
+
+  const qLower = q.toLowerCase();
+  const idSet = new Set<number>();
+
+  const allIngredients = await prisma.ingredient.findMany({
+    select: { id: true, name: true, category: true, keywords: true },
+  });
+  for (const ing of allIngredients) {
+    if (ing.name.toLowerCase().includes(qLower)) {
+      idSet.add(ing.id);
+      continue;
+    }
+    if (ing.keywords.some((kw) => kw.toLowerCase().includes(qLower))) {
+      idSet.add(ing.id);
+    }
+  }
+
+  const byProduct = await prisma.product.findMany({
+    where: {
+      name: { contains: q, mode: 'insensitive' },
+      ingredientId: { not: null },
+    },
+    select: { ingredientId: true },
+    distinct: ['ingredientId'],
+    take: 50,
+  });
+  for (const p of byProduct) {
+    if (p.ingredientId != null) idSet.add(p.ingredientId);
+  }
+
+  const cats = await prisma.storeCategory.findMany({
+    where: { name: { contains: q, mode: 'insensitive' } },
+    select: { id: true },
+  });
+  if (cats.length > 0) {
+    const byCat = await prisma.product.findMany({
+      where: {
+        storeCategoryId: { in: cats.map((c) => c.id) },
+        ingredientId: { not: null },
+      },
+      select: { ingredientId: true },
+      distinct: ['ingredientId'],
+      take: 50,
+    });
+    for (const p of byCat) {
+      if (p.ingredientId != null) idSet.add(p.ingredientId);
+    }
+  }
+
+  const ingredientIds = [...idSet].slice(0, SEARCH_LIMIT);
+  if (ingredientIds.length === 0) {
+    return { query: q, items: [] };
+  }
+
+  const ingredients = allIngredients.filter((i) =>
+    ingredientIds.includes(i.id),
+  );
+
+  const products = await prisma.product.findMany({
+    where: {
+      ingredientId: { in: ingredientIds },
+      isInStock: true,
+      pricePerGram: { not: null },
+    },
+    include: { store: true },
+    orderBy: { pricePerGram: 'asc' },
+  });
+
+  const items = ingredients.map((ing) => {
+    const forIngredient = products.filter((p) => p.ingredientId === ing.id);
+    const crawled = forIngredient.filter((p) => !isSeedProduct(p));
+    const pool = crawled.length > 0
+      ? crawled
+      : forIngredient.filter((p) => isSeedProduct(p));
+
+    const cheapestPerStore = new Map<number, (typeof products)[number]>();
+    for (const p of pool) {
+      if (!cheapestPerStore.has(p.storeId)) cheapestPerStore.set(p.storeId, p);
+    }
+
+    const offers = [...cheapestPerStore.values()]
+      .map((p) => {
+        const perGram = Number(p.pricePerGram);
+        return {
+          storeId: p.storeId,
+          storeName: p.store.name,
+          sourceSite: p.store.sourceSite,
+          productName: p.name,
+          productUrl: p.url,
+          currentPrice: p.currentPrice != null
+            ? Math.round(Number(p.currentPrice))
+            : null,
+          rawUnit: p.rawUnit,
+          pricePer100g: Math.round(perGram * 100),
+          crawledAt: p.lastSeenAt,
+          isReference: isSeedProduct(p),
+        };
+      })
+      .sort((a, b) => a.pricePer100g - b.pricePer100g);
+
+    return {
+      ingredientId: ing.id,
+      name: ing.name,
+      category: ing.category,
+      bestOffer: offers[0] ?? null,
+      offers,
+    };
+  });
+
+  items.sort((a, b) => {
+    const ap = a.bestOffer?.pricePer100g ?? Number.POSITIVE_INFINITY;
+    const bp = b.bestOffer?.pricePer100g ?? Number.POSITIVE_INFINITY;
+    return ap - bp;
+  });
+
+  return { query: q, items };
+}
+
 /******************************************************************************
                             Export default
 ******************************************************************************/
@@ -310,4 +441,5 @@ export default {
   nearby,
   geocode,
   compare,
+  search,
 } as const;

@@ -10,6 +10,7 @@ export interface INavItem {
 export const NAV_ITEMS: readonly INavItem[] = [
   { href: "/home", label: "Trang chủ", icon: "home" },
   { href: "/planner", label: "Thực đơn", icon: "bowl" },
+  { href: "/prices", label: "So giá", icon: "search" },
   { href: "/history", label: "Lịch sử", icon: "calendar" },
   { href: "/stores", label: "Đi chợ", icon: "cart" },
 ];
