@@ -84,7 +84,7 @@ export default function AdminLayout({
 
         <div className="border-t-2 border-panel/12 px-3 py-3">
           <Link
-            href="/"
+            href="/home"
             className="disp press flex items-center justify-center gap-1.5 border-2 border-panel/30 py-2 text-[0.58rem] tracking-[0.12em] text-panel/70 hover:border-sign hover:text-sign"
           >
             <Icon name="chevronLeft" className="size-3.5" />

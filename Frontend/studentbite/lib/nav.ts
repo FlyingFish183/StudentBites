@@ -8,7 +8,7 @@ export interface INavItem {
 
 /** Bốn mục điều hướng chính; TabBar (mobile) và SideNav (desktop) dùng chung. */
 export const NAV_ITEMS: readonly INavItem[] = [
-  { href: "/", label: "Trang chủ", icon: "home" },
+  { href: "/home", label: "Trang chủ", icon: "home" },
   { href: "/planner", label: "Thực đơn", icon: "bowl" },
   { href: "/history", label: "Lịch sử", icon: "calendar" },
   { href: "/stores", label: "Đi chợ", icon: "cart" },

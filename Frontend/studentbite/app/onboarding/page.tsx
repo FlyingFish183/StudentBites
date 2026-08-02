@@ -78,7 +78,7 @@ export default function OnboardingPage() {
         monthlyBudget: Number(monthlyBudget),
       });
       await queryClient.invalidateQueries();
-      router.replace("/");
+      router.replace("/home");
     } catch (err) {
       setError(
         err instanceof ApiError

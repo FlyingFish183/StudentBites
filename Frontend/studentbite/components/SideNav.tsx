@@ -30,8 +30,8 @@ export default function SideNav() {
       <nav className="flex flex-1 flex-col gap-1.5 px-3 py-4">
         {NAV_ITEMS.map((item) => {
           const active =
-            item.href === "/"
-              ? pathname === "/"
+            item.href === "/home"
+              ? pathname === "/home"
               : pathname.startsWith(item.href);
           return (
             <Link

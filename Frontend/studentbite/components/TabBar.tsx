@@ -15,8 +15,8 @@ export default function TabBar() {
         <div className="grid grid-cols-4">
           {NAV_ITEMS.map((tab) => {
             const active =
-              tab.href === "/"
-                ? pathname === "/"
+              tab.href === "/home"
+                ? pathname === "/home"
                 : pathname.startsWith(tab.href);
             return (
               <Link
