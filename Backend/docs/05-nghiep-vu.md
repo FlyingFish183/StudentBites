@@ -228,16 +228,19 @@ flowchart TB
     PLAN["Thực đơn ngày"] --> ITEMS["4 MealPlanItem"]
     ITEMS --> DISH["Dish → DishIngredient"]
     DISH --> SUM["Gom tổng gram theo từng nguyên liệu<br/><i>ức gà ở 2 món thì cộng lại</i>"]
-    SUM --> PRICE["Đọc IngredientPrice của các nguyên liệu đó"]
-    PRICE --> LATEST["Mỗi cửa hàng chỉ giữ giá mới nhất"]
-    LATEST --> COST["Chi phí = pricePerUnit × số gram cần"]
+    SUM --> PRICE["Đọc Product đã map về các nguyên liệu đó<br/><i>còn hàng, có pricePerGram</i>"]
+    PRICE --> LATEST["Mỗi cửa hàng giữ sản phẩm rẻ nhất<br/>tính theo đồng/gram"]
+    LATEST --> COST["Chi phí = pricePerGram × số gram cần"]
     COST --> BEST["bestOffer: rẻ nhất cho từng nguyên liệu"]
     COST --> TOTALS["storeTotals: tổng nếu mua hết tại một nơi"]
 ```
 
-Điểm mấu chốt là quy mọi giá về **`pricePerUnit` (đồng trên mỗi gram)** ngay
-lúc crawl. Nhờ vậy so sánh "ức gà gói 500g" với "ức gà gói 1kg" là phép nhân
-đơn giản, không cần quy đổi lúc truy vấn.
+Điểm mấu chốt là quy mọi giá về **`pricePerGram`** ngay lúc crawl. Nhờ vậy so
+sánh "ức gà gói 500g" với "ức gà gói 1kg" là phép nhân đơn giản, không cần quy
+đổi lúc truy vấn.
+
+Sản phẩm không đọc được khối lượng có `pricePerGram = null` và **bị loại khỏi
+so giá** — không so được thì thà không hiện còn hơn hiện sai.
 
 Cạm bẫy khi đọc kết quả: một cửa hàng chỉ bán 3/9 nguyên liệu sẽ có `total`
 thấp nhất mà không hề rẻ nhất. Luôn đọc `total` kèm `itemCount` —

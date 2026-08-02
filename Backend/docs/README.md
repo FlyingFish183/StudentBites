@@ -31,7 +31,8 @@ Container → Component). Quyết định kiến trúc ghi dưới dạng **ADR*
 |---|---|---|---|
 | 01 | [Bắt đầu](./01-bat-dau.md) | Tutorial | Từ máy trắng đến API chạy được kèm dữ liệu mẫu |
 | 02 | [Kiến trúc](./02-kien-truc.md) | Explanation | Sơ đồ C4, phân lớp, vòng đời một request |
-| 03 | [Mô hình dữ liệu](./03-mo-hinh-du-lieu.md) | Reference | ERD, từng bảng, ràng buộc, chỉ mục |
+| 03 | [Mô hình dữ liệu](./03-mo-hinh-du-lieu.md) | Reference | ERD phần nghiệp vụ chính, từng bảng, ràng buộc |
+| — | [ERD đầy đủ](./ERD.md) | Reference | Sơ đồ toàn bộ bảng, **sinh tự động** bằng `npm run docs:erd` |
 | 04 | [API](./04-api.md) | Reference | Toàn bộ endpoint: request, response, mã lỗi |
 | 05 | [Nghiệp vụ](./05-nghiep-vu.md) | Explanation | TDEE, chia ngân sách, thuật toán chọn thực đơn, so giá |
 | 06 | [Crawler giá](./06-crawler.md) | Explanation + How-to | Cách crawl, map sản phẩm về nguyên liệu, vận hành |

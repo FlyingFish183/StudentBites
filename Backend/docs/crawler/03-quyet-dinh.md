@@ -60,9 +60,13 @@ duyệt.
 
 ---
 
-### QĐ-003 · Tách "giá hiện tại" khỏi "lịch sử giá"
+### QĐ-003 · Tách "giá hiện tại" khỏi "lịch sử giá" — ⚠️ đã thay thế bởi [QĐ-007](#qđ-007--tách-product-khỏi-ingredient-bỏ-ingredientprice)
 
 **Ngày:** 2026-08-02 · **Migration:** `20260802172222_add_crawl_history_and_price_history`
+
+> Quyết định này sống được vài giờ. Giữ lại vì nó ghi đúng vấn đề (giá bị ghi
+> đè, không có lịch sử) — chỉ là chỗ gắn giá sai: giá thuộc về sản phẩm chứ
+> không thuộc về cặp (nguyên liệu, cửa hàng).
 
 **Bối cảnh.** `saveProducts` dùng `upsert` nên mỗi cặp (nguyên liệu, cửa hàng,
 sản phẩm) chỉ có **một** dòng — giá cũ bị ghi đè mất. Không trả lời được câu
@@ -163,6 +167,50 @@ chính là cách cả ba site hỏng nhiều ngày mà không ai biết.
 
 **Xem lại khi.** Nếu về sau chỉ còn một loại job và không cần dashboard nữa
 thì `pg-boss` gọn hơn, bớt được một hạ tầng.
+
+---
+
+### QĐ-007 · Tách `Product` khỏi `Ingredient`, bỏ `IngredientPrice`
+
+**Ngày:** 2026-08-02 · **Ai chốt:** bạn
+**Migration:** `..._add_product_and_store_category`
+
+**Bối cảnh.** `Ingredient` vừa là khái niệm nấu ăn vừa là chỗ chứa giá. Công
+thức cần 200g gạo nhưng siêu thị chỉ bán bao 5kg — hai thứ khác nhau bị nhét
+chung. Dữ liệu crawl thật có SKU, ảnh, khuyến mãi, tình trạng còn hàng, và
+không có chỗ nào để chứa.
+
+**Chốt.** Ba bảng mới, bỏ hai bảng cũ:
+
+| Bảng | Vai trò |
+|---|---|
+| `Product` | Sản phẩm có thật trên kệ một sàn. Khoá `(storeId, sku)` |
+| `StoreCategory` | Danh mục của từng sàn — đưa `CATEGORY_PATHS` từ mã vào DB |
+| `ProductPriceHistory` | Diễn biến giá của từng sản phẩm |
+| ~~`IngredientPrice`~~ | Bỏ — giá luôn thuộc về Product |
+| ~~`PriceHistory`~~ | Bỏ — thay bằng `ProductPriceHistory` |
+
+Giá của nguyên liệu là **suy ra**: lấy sản phẩm rẻ nhất theo `pricePerGram`
+trong số các sản phẩm đã map về nguyên liệu đó.
+
+**Ba điểm bổ sung ngoài spec ban đầu:**
+
+1. `matchSource` + `matchedKeyword` — map bằng keyword rất dễ sai; ba trường
+   này cho phép soi lại và sửa tay. `MANUAL` không bị crawl sau ghi đè.
+2. `baseWeightGrams` cho phép **null**, và `parseWeightGrams` trả `null` thay
+   vì đoán 1kg. Đóng luôn C-04.
+3. `firstSeenAt` / `lastSeenAt` — biết sản phẩm nào đã bị sàn gỡ mà không phải
+   xoá dữ liệu.
+
+**Đánh đổi.**
+- `StoreService.compare` phải viết lại. Đã làm, giữ **nguyên hình dạng
+  response** nên giao diện không đổi một dòng.
+- Seed phải tạo `Product` thay vì `IngredientPrice`.
+- `Product.id` dùng UUID trong khi phần còn lại của schema dùng `Int` — chấp
+  nhận lệch vì dữ liệu crawl có thể sinh id trước khi ghi.
+
+**Xem lại khi.** Nếu một sản phẩm cần map vào nhiều nguyên liệu (combo, set
+thực phẩm) thì `ingredientId` một-một không đủ, phải chuyển sang bảng nối.
 
 ---
 

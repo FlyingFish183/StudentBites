@@ -44,9 +44,10 @@ flowchart TB
     RAW --> SAVE["saveProducts(sourceSite, products)"]
 
     SAVE --> MATCH["Map tên sản phẩm → Ingredient<br/><i>qua keywords</i>"]
-    MATCH --> WEIGHT["parseWeightGrams()<br/><i>đọc khối lượng từ tên</i>"]
-    WEIGHT --> UPSERT["upsert IngredientPrice<br/>kèm pricePerUnit"]
-    UPSERT --> DB[("PostgreSQL")]
+    MATCH --> WEIGHT["parseWeightGrams()<br/><i>đọc khối lượng, null nếu không rõ</i>"]
+    WEIGHT --> UPSERT["upsert Product<br/>kèm pricePerGram"]
+    UPSERT --> HIST["ghi ProductPriceHistory<br/><i>chỉ khi giá đổi</i>"]
+    HIST --> DB[("PostgreSQL")]
 ```
 
 Mỗi crawler thất bại được **bắt riêng lẻ** trong
@@ -90,24 +91,29 @@ ghi nhận sai giá.
 | `l`, `lít` | "Sữa tươi 1 lít" | 1000 g |
 | `ml` | "Nước mắm 500ml" | 500 g |
 | "vỉ/hộp N quả" | "Vỉ 10 trứng" | 550 g (1 quả ≈ 55g) |
-| Không khớp gì | "Rau muống" | **1000 g** (mặc định) |
+| Không khớp gì | "Rau muống" | **`null`** |
 
-Mặc định 1000g là giả định nguy hiểm nhưng cần thiết: nhiều mặt hàng tươi bán
-theo kg mà không ghi số. Hệ quả — sản phẩm bán theo bó/gói nhỏ mà không ghi
-khối lượng sẽ bị tính rẻ hơn thực tế. Xem
-[08 · Vấn đề đã biết](./08-van-de-da-biet.md).
+Trả `null` thay vì đoán 1kg là chủ ý. Bản trước mặc định 1000g, khiến một bó
+rau 300g giá 12.000₫ bị tính thành 12₫/100g thay vì 40₫/100g — rẻ hơn thực tế
+3 lần, và màn so giá sẽ khuyên sai. Sản phẩm có `baseWeightGrams = null` thì
+`pricePerGram` cũng null và bị loại khỏi so giá: sót còn hơn sai.
 
 ## Bước 3 — Lưu giá
 
 ```
-pricePerUnit = price ÷ unitQty        (đồng trên mỗi gram)
+pricePerGram = currentPrice ÷ baseWeightGrams
 ```
 
-Ghi bằng `upsert` với khoá `(ingredientId, storeId, productName)` nên chạy lại
-mỗi ngày chỉ cập nhật `price` và `crawledAt`, không sinh bản sao.
+Ghi bằng `upsert` với khoá `(storeId, sku)` nên chạy lại mỗi ngày chỉ cập nhật
+giá và `lastSeenAt`, không sinh bản sao. Sàn không cho mã SKU thì `sku` sinh từ
+tên sản phẩm để khoá vẫn ổn định.
 
-`pricePerUnit` được tính sẵn ở đây thay vì lúc truy vấn, để màn so giá chỉ
-việc nhân với số gram cần mua.
+`pricePerGram` tính sẵn ở đây thay vì lúc truy vấn, để màn so giá chỉ việc
+nhân với số gram cần mua.
+
+**Sản phẩm đã được sửa tay** (`matchSource = MANUAL`) thì lượt crawl sau chỉ
+cập nhật giá, **không** map lại nguyên liệu — nếu không, mỗi lần crawl là mọi
+chỉnh sửa thủ công bị xoá sạch.
 
 ---
 
@@ -120,11 +126,11 @@ flowchart LR
         C["Thống kê chi tiêu"] --> D["MealLog.cost<br/><i>người dùng ghi nhận</i>"]
     end
     subgraph DEP["Phụ thuộc crawler"]
-        E["Màn So giá"] --> F["IngredientPrice"]
+        E["Màn So giá"] --> F["Product"]
     end
 ```
 
-Crawler chỉ nuôi **một** tính năng. Seed đã nạp sẵn 84 dòng giá tham khảo cho
+Crawler chỉ nuôi **một** tính năng. Seed đã nạp sẵn 84 sản phẩm tham khảo cho
 3 nguồn, nên màn so giá có dữ liệu ngay cả khi chưa crawl lần nào.
 
 Trường `crawledAt` được trả về trong API để giao diện nói được "giá cập nhật
