@@ -46,6 +46,16 @@ const Paths = {
     Geocode: '/geocode',
     Compare: '/compare',
   },
+  Admin: {
+    _: '/admin',
+    Models: '/models',
+    Options: '/:model/options',
+    List: '/:model',
+    GetOne: '/:model/:id',
+    Create: '/:model',
+    Update: '/:model/:id',
+    Delete: '/:model/:id',
+  },
 } as const;
 
 export const JetPaths = jetPaths(Paths);
