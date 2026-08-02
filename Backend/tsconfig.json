@@ -21,6 +21,7 @@
     "src/**/*.ts",
     "tests/**/*.ts",
     "scripts",
+    "prisma/**/*.ts",
     "eslint.config.ts",
     "vitest.config.mts"
   ],

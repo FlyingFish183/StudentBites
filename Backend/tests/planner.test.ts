@@ -120,7 +120,7 @@ describe('planner-algorithm.pickMenuForDay', () => {
 
   it('không chọn trùng món trong cùng 1 ngày', () => {
     const menu = pickMenuForDay(DISHES, targets);
-    const ids = Object.values(menu).map((d) => d!.id);
+    const ids = Object.values(menu).map((d) => d.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
