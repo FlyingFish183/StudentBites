@@ -9,6 +9,10 @@
 
 ## Sơ đồ quan hệ
 
+> Sơ đồ dưới đây tập trung vào **phần nghiệp vụ chính**. Bản đầy đủ gồm cả
+> bảng vận hành crawl và quản trị nằm ở [ERD.md](./ERD.md), sinh tự động từ
+> schema nên không bao giờ lệch.
+
 ```mermaid
 erDiagram
     User ||--o| Profile : "có một"
@@ -22,8 +26,11 @@ erDiagram
     Dish ||--o{ DishIngredient : "gồm"
     DishIngredient }o--|| Ingredient : "dùng"
 
-    Ingredient ||--o{ IngredientPrice : "được báo giá"
-    Store ||--o{ IngredientPrice : "báo giá"
+    Ingredient ||--o{ Product : "được bán dưới dạng"
+    Store ||--o{ Product : "bán"
+    Store ||--o{ StoreCategory : "có danh mục"
+    StoreCategory ||--o{ Product : "chứa"
+    Product ||--o{ ProductPriceHistory : "biến động giá"
 
     User {
         int id PK
@@ -79,15 +86,38 @@ erDiagram
         string sourceSite
         string osmId UK
     }
-    IngredientPrice {
-        int id PK
-        int ingredientId FK
+    Product {
+        uuid id PK
         int storeId FK
-        string productName
-        int price "VND cho unitQty"
-        float unitQty "gram"
-        float pricePerUnit "VND mỗi gram"
-        datetime crawledAt
+        int storeCategoryId FK
+        string sku "mã trên sàn"
+        string name
+        decimal currentPrice
+        bool isInStock
+        string rawUnit "300g, 0.5KG, Gói"
+        int baseWeightGrams "null nếu chưa đọc được"
+        decimal pricePerGram "tính sẵn để so giá"
+        json metadata "phần riêng của từng sàn"
+        int ingredientId FK "null nếu chưa map"
+        enum matchSource "NONE|AUTO_KEYWORD|MANUAL"
+        string matchedKeyword
+        datetime lastSeenAt
+    }
+    StoreCategory {
+        int id PK
+        int storeId FK
+        string path "/c/thit-heo"
+        string name
+        bool isActive
+        int lastStatus "mã HTTP lần cuối"
+    }
+    ProductPriceHistory {
+        int id PK
+        uuid productId FK
+        decimal price
+        bool isInStock
+        int crawlRunId FK
+        datetime recordedAt
     }
     MealPlan {
         int id PK
@@ -135,8 +165,8 @@ flowchart TB
         MealPlan --- MealPlanItem
         MealLog
     end
-    subgraph N4["Giá cả"]
-        Store --- IngredientPrice --- Ingredient
+    subgraph N4["Hàng hoá & giá"]
+        Store --- StoreCategory --- Product --- Ingredient
     end
 
     N1 --> N3
@@ -145,8 +175,19 @@ flowchart TB
 ```
 
 Hệ quả thực tế: **crawler và người dùng không đụng nhau.** Crawler chỉ ghi vào
-`IngredientPrice`/`Store`; hỏng crawler thì thực đơn vẫn tạo được vì
+`Product`/`ProductPriceHistory`; hỏng crawler thì thực đơn vẫn tạo được vì
 `Dish.estimatedCost` là giá đã chốt sẵn trong danh mục.
+
+### Vì sao tách `Product` khỏi `Ingredient`
+
+`Ingredient` là khái niệm nấu ăn: công thức cần **200g gạo**. `Product` là thứ
+có thật trên kệ: siêu thị chỉ bán **bao 5kg**. Trộn hai thứ vào một bảng thì
+mọi giá đều phải giả vờ là "giá của 1kg nguyên liệu", và dữ liệu crawl thật —
+vốn có mã SKU, ảnh, khuyến mãi, tình trạng còn hàng — không có chỗ để chứa.
+
+Giá **luôn** thuộc về `Product`; giá của một nguyên liệu là suy ra: lấy sản
+phẩm rẻ nhất tính theo `pricePerGram` trong số các sản phẩm đã map về nguyên
+liệu đó.
 
 ---
 
@@ -158,6 +199,8 @@ Hệ quả thực tế: **crawler và người dùng không đụng nhau.** Craw
 | `Goal` | `GAIN_MUSCLE`, `LOSE_FAT`, `MAINTAIN` | Quyết định g protein/kg và mức chênh calo |
 | `MealType` | `BREAKFAST`, `LUNCH`, `DINNER`, `SNACK` | Cũng là khoá chia ngân sách bữa |
 | `StoreType` | `MARKET`, `SUPERMARKET`, `CONVENIENCE`, `ONLINE` | `MARKET` là mặc định khi OSM không nói rõ |
+| `MatchSource` | `NONE`, `AUTO_KEYWORD`, `MANUAL` | `MANUAL` = người sửa tay, crawl sau không ghi đè |
+| `CrawlStatus` | `RUNNING`, `SUCCESS`, `PARTIAL`, `FAILED` | Trạng thái một lượt crawl |
 
 ---
 
@@ -167,7 +210,8 @@ Hệ quả thực tế: **crawler và người dùng không đụng nhau.** Craw
 |---|---|---|
 | `Profile.userId` | `@unique` | Mỗi người đúng một hồ sơ; cho phép `upsert` theo `userId` |
 | `MealPlan` | `@@unique([userId, date])` | Một người một ngày chỉ một thực đơn — tạo lại là ghi đè, không cộng dồn |
-| `IngredientPrice` | `@@unique([ingredientId, storeId, productName])` | Crawler chạy lại mỗi ngày sẽ cập nhật đúng dòng cũ thay vì sinh bản sao |
+| `Product` | `@@unique([storeId, sku])` | Crawler chạy lại mỗi ngày cập nhật đúng dòng cũ thay vì sinh bản sao |
+| `StoreCategory` | `@@unique([storeId, path])` | Một sàn không có hai danh mục cùng đường dẫn |
 | `Store.osmId` | `@unique` | Khoá `upsert` khi cache kết quả Overpass. Nguồn online cũng mượn cột này với dạng `online-winmart` |
 | `Ingredient.name`, `Dish.name` | `@unique` | Để seed chạy lại được nhiều lần mà không nhân bản |
 
@@ -221,9 +265,13 @@ khoảng 00:00–07:00 giờ Việt Nam. Xem
 [`prisma/seed.ts`](../prisma/seed.ts) nạp:
 
 - **28 nguyên liệu** phổ biến với macro chuẩn và `keywords` để crawler match.
-- **3 cửa hàng online** đại diện — giá sinh ra từ `basePricePerKg` nhân hệ số:
-  Bách Hóa Xanh `×1.00`, WinMart `×1.06`, Co.op `×0.97`. Nhờ chênh lệch nhân
-  tạo này mà màn so giá có thứ để hiển thị ngay cả khi chưa crawl lần nào.
+- **3 cửa hàng online** kèm **19 danh mục** (`StoreCategory`) — đường dẫn crawl
+  giờ nằm trong DB thay vì hằng số trong mã, sửa được ngay trên trang quản trị
+  khi sàn đổi URL.
+- **84 sản phẩm tham khảo** (`Product`, 28 nguyên liệu × 3 sàn) — giá sinh từ
+  `basePricePerKg` nhân hệ số: Bách Hóa Xanh `×1.00`, WinMart `×1.06`, Co.op
+  `×0.97`. Đánh dấu `matchSource = MANUAL` nên lượt crawl sau không map đè.
+  Nhờ chúng mà màn so giá có dữ liệu ngay cả khi chưa crawl lần nào.
 - **26 món ăn** sinh viên kèm định lượng nguyên liệu.
 
 Seed dùng `upsert` toàn bộ nên chạy lại nhiều lần an toàn.

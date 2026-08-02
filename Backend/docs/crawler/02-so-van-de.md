@@ -15,7 +15,7 @@
 | C-01 | Co.op: selector không khớp markup hiện tại | Cao | mở |
 | C-02 | WinMart: toàn bộ URL danh mục trả 404 | Cao | mở |
 | C-03 | Bách Hóa Xanh: trang render bằng JS, cheerio không đọc được | Cao | mở |
-| C-04 | `parseWeightGrams` mặc định 1000g khi không đọc được khối lượng | Trung bình | mở |
+| C-04 | `parseWeightGrams` mặc định 1000g khi không đọc được khối lượng | Trung bình | **xong** |
 | C-05 | Không có cảnh báo khi tỉ lệ match tụt | Trung bình | đang làm |
 | C-06 | Cron chạy chung tiến trình với API | Thấp | **xong** |
 
@@ -81,11 +81,11 @@ chờ bạn chốt**.
 **Hậu quả.** Một bó rau 300g giá 12.000₫ bị tính thành 12₫/100g thay vì
 40₫/100g — **rẻ hơn thực tế 3 lần**, và màn so giá sẽ khuyên sai.
 
-**Cách sửa đề xuất.** Trả `null` thay vì đoán, bỏ qua sản phẩm không đọc được
-khối lượng. Sót còn hơn sai.
-
-**Vì sao chưa sửa.** Chưa có dữ liệu crawl thật để biết bao nhiêu phần trăm
-sản phẩm rơi vào trường hợp này. Sửa xong C-01 sẽ đo được.
+**Đã sửa (2026-08-02).** `parseWeightGrams` trả `null` thay vì đoán.
+`Product.baseWeightGrams` và `pricePerGram` cho phép null; sản phẩm thiếu khối
+lượng bị loại khỏi so giá. `saveProducts` đếm riêng số sản phẩm dạng này
+(`noWeight`) để biết tỉ lệ ngay lần crawl đầu. Xem
+[QĐ-007](./03-quyet-dinh.md).
 
 ---
 
@@ -119,3 +119,4 @@ sinh một job mỗi mốc. Xem [QĐ-006](./03-quyet-dinh.md).
 | Mã | Vấn đề | Xong ở |
 |---|---|---|
 | C-06 | Cron chạy chung tiến trình với API | QĐ-006, 2026-08-02 |
+| C-04 | parseWeightGrams đoán 1000g | QĐ-007, 2026-08-02 |

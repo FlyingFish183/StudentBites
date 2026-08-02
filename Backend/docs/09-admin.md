@@ -1,7 +1,7 @@
 # 09 · Khu quản trị
 
 > API quản trị generic ở `/api/admin`, phục vụ trang `/admin` phía giao diện.
-> Một bộ endpoint duy nhất chạy được cho cả 11 bảng.
+> Một bộ endpoint duy nhất chạy được cho mọi bảng trong schema.
 
 **Loại tài liệu:** Explanation + Reference. Mã nguồn:
 [`services/AdminService.ts`](../src/services/AdminService.ts),
@@ -87,7 +87,7 @@ Tất cả đều cần đăng nhập **và** có quyền quản trị.
 | `DELETE` | `/api/admin/:model/:id` | Xoá |
 
 `:model` là tên model **viết hoa đầu** đúng như trong schema: `Ingredient`,
-`IngredientPrice`, `MealLog`…
+`Product`, `StoreCategory`, `MealLog`…
 
 ### Tham số của danh sách
 
