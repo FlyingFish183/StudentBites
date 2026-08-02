@@ -132,7 +132,7 @@ export default function StoresPage() {
   }
 
   const stores = nearbyQuery.data?.stores ?? [];
-  // Overpass hay trả về vài chục cửa hàng tiện lợi; chỉ mở gần nhất trước.
+  // Chỉ Co.op / BHX / WinMart — vẫn cắt preview nếu dày điểm trong bán kính.
   const visibleStores = showAllStores ? stores : stores.slice(0, STORE_PREVIEW);
   const hiddenCount = stores.length - visibleStores.length;
   const compare = compareQuery.data;
@@ -231,7 +231,7 @@ export default function StoresPage() {
         ) : stores.length === 0 ? (
           <EmptyState
             icon="pin"
-            title="Không thấy chỗ nào trong bán kính này"
+            title="Không thấy Co.op, Bách Hóa Xanh hay WinMart gần đây"
             hint="Nới bán kính lên 5km hoặc nhập địa chỉ khác."
           />
         ) : (

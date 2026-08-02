@@ -20,6 +20,17 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 const USER_AGENT = 'StudentBites/1.0 (student project)';
 
+/**
+ * Chỉ gợi ý chuỗi siêu thị hỗ trợ so giá trên app.
+ * Gồm cả VinMart (tên cũ của WinMart) vì OSM còn nhiều bản ghi cũ.
+ */
+const ALLOWED_NEARBY_BRAND =
+  /co\.?\s*op|coop\s*mart|bách\s*hóa\s*xanh|bach\s*hoa\s*xanh|\bbhx\b|win\s*mart|vin\s*mart/i;
+
+/** Regex tương đương cho Overpass (lọc sớm, tránh trần `out 60` đầy cửa hàng khác). */
+const OVERPASS_BRAND_NAME =
+  'Co\\.?op|Coopmart|Bách Hóa|Bach Hoa|BHX|Win.?Mart|Vin.?Mart';
+
 /******************************************************************************
                                 Types
 ******************************************************************************/
@@ -72,21 +83,23 @@ function osmShopToStoreType(shop?: string): StoreType {
   return StoreType.MARKET;
 }
 
+function isAllowedNearbyBrand(name: string): boolean {
+  return ALLOWED_NEARBY_BRAND.test(name);
+}
+
 /******************************************************************************
                                 Functions
 ******************************************************************************/
 
 /**
- * FR-5.1/5.2: Tìm chợ / siêu thị / cửa hàng trong bán kính quanh vị trí.
+ * FR-5.1/5.2: Tìm Co.op / Bách Hóa Xanh / WinMart trong bán kính quanh vị trí.
  */
 async function nearby(lat: number, lng: number, radiusM: number) {
   const query = `
     [out:json][timeout:15];
     (
-      node["shop"~"supermarket|convenience"](around:${radiusM},${lat},${lng});
-      way["shop"~"supermarket|convenience"](around:${radiusM},${lat},${lng});
-      node["amenity"="marketplace"](around:${radiusM},${lat},${lng});
-      way["amenity"="marketplace"](around:${radiusM},${lat},${lng});
+      node["shop"~"supermarket|convenience"]["name"~"${OVERPASS_BRAND_NAME}",i](around:${radiusM},${lat},${lng});
+      way["shop"~"supermarket|convenience"]["name"~"${OVERPASS_BRAND_NAME}",i](around:${radiusM},${lat},${lng});
     );
     out center 60;`;
   const { data } = await axios.post<{ elements: IOsmElement[] }>(
@@ -107,12 +120,9 @@ async function nearby(lat: number, lng: number, radiusM: number) {
     const elLng = el.lon ?? el.center?.lon;
     if (elLat == null || elLng == null) continue;
     const tags = el.tags ?? {};
-    const name = tags.name ?? (tags.amenity === 'marketplace'
-      ? 'Chợ (không tên)'
-      : 'Cửa hàng (không tên)');
-    const type = tags.amenity === 'marketplace'
-      ? StoreType.MARKET
-      : osmShopToStoreType(tags.shop);
+    const name = tags.name?.trim();
+    if (!name || !isAllowedNearbyBrand(name)) continue;
+    const type = osmShopToStoreType(tags.shop);
     const address = [tags['addr:housenumber'], tags['addr:street'],
       tags['addr:city']].filter(Boolean).join(' ') || null;
     const osmId = `${el.type}-${el.id}`;
