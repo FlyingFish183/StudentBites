@@ -1,4 +1,4 @@
-import { StoreType } from '@prisma/client';
+import { MatchSource, StoreType } from '@prisma/client';
 import axios from 'axios';
 
 import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
@@ -36,6 +36,21 @@ interface IOsmElement {
 /******************************************************************************
                                 Helpers
 ******************************************************************************/
+
+/**
+ * Giá seed (sku `seed-…`, metadata.seed, hoặc MANUAL seed) chỉ là dự phòng
+ * khi crawler chưa có dữ liệu. Không được thắng giá crawl thật.
+ */
+function isSeedProduct(p: {
+  sku: string;
+  matchSource: MatchSource;
+  metadata: unknown;
+}): boolean {
+  if (p.sku.startsWith('seed-')) return true;
+  if (p.matchSource !== MatchSource.MANUAL) return false;
+  const meta = p.metadata as { seed?: boolean } | null;
+  return meta?.seed === true;
+}
 
 /** Khoảng cách haversine (mét). */
 function distanceM(
@@ -195,14 +210,20 @@ async function compare(userId: number, dateStr: string) {
     orderBy: { pricePerGram: 'asc' },
   });
 
-  // Với mỗi nguyên liệu: mỗi cửa hàng giữ đúng một chào giá rẻ nhất
+  // Với mỗi nguyên liệu: mỗi cửa hàng giữ đúng một chào giá rẻ nhất.
+  // Có dữ liệu crawl thì CHỈ dùng crawl — không để giá seed ảo thắng giá thật
+  // chỉ vì seed gắn với store khác. Seed chỉ khi crawler chưa match nguyên liệu.
   const items = ingredientIds.map((ingId) => {
     const info = needed.get(ingId)!;
     const forIngredient = products.filter((p) => p.ingredientId === ingId);
+    const crawled = forIngredient.filter((p) => !isSeedProduct(p));
+    const pool = crawled.length > 0
+      ? crawled
+      : forIngredient.filter((p) => isSeedProduct(p));
 
     const cheapestPerStore = new Map<number, (typeof products)[number]>();
-    for (const p of forIngredient) {
-      // products đã sắp theo pricePerGram tăng dần nên gặp trước là rẻ nhất
+    for (const p of pool) {
+      // pool đã sắp theo pricePerGram tăng dần nên gặp trước là rẻ nhất
       if (!cheapestPerStore.has(p.storeId)) cheapestPerStore.set(p.storeId, p);
     }
 
@@ -219,6 +240,7 @@ async function compare(userId: number, dateStr: string) {
           estimatedCost: Math.round(perGram * info.grams),
           pricePer100g: Math.round(perGram * 100),
           crawledAt: p.lastSeenAt,
+          isReference: isSeedProduct(p),
         };
       })
       .sort((a, b) => a.estimatedCost - b.estimatedCost);
