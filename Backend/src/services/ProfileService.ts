@@ -1,5 +1,3 @@
-import { ActivityLevel, Goal } from '@prisma/client';
-
 import HttpStatusCodes from '@src/common/constants/HttpStatusCodes';
 import {
   calcTargets,
@@ -53,8 +51,9 @@ async function getTargets(userId: number): Promise<INutritionTargets> {
     weightKg: profile.weightKg,
     age: profile.age,
     gender: profile.gender,
-    activityLevel: profile.activityLevel as ActivityLevel,
-    goal: profile.goal as Goal,
+    // Prisma đã trả về đúng kiểu enum rồi, không cần ép lại.
+    activityLevel: profile.activityLevel,
+    goal: profile.goal,
     monthlyBudget: profile.monthlyBudget,
   });
 }
