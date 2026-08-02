@@ -49,6 +49,8 @@ const Paths = {
   Admin: {
     _: '/admin',
     Models: '/models',
+    QueueStatus: '/queue/status',
+    QueueRun: '/queue/crawl',
     Options: '/:model/options',
     List: '/:model',
     GetOne: '/:model/:id',

@@ -1,5 +1,4 @@
 import logger from 'jet-logger';
-import cron from 'node-cron';
 
 import prisma from '@src/repos/prisma';
 
@@ -18,40 +17,63 @@ const CRAWLERS: ICrawler[] = [
   CoopMartCrawler,
 ];
 
-// 2h sáng mỗi ngày
-const CRON_SCHEDULE = '0 2 * * *';
+/******************************************************************************
+                                Functions
+******************************************************************************/
+
+/******************************************************************************
+                                Types
+******************************************************************************/
+
+export interface ICrawlResult {
+  sourceSite: string;
+  /** Số sản phẩm bóc được từ HTML */
+  productsFound: number;
+  /** Số sản phẩm khớp được về một Ingredient */
+  matched: number;
+}
 
 /******************************************************************************
                                 Functions
 ******************************************************************************/
 
+/** Danh sách nguồn đang đăng ký. */
+export function crawlerSites(): string[] {
+  return CRAWLERS.map((c) => c.sourceSite);
+}
+
 /**
- * Chạy toàn bộ crawler 1 lượt và lưu giá vào DB.
+ * Chạy MỘT nguồn và lưu giá. Ném lỗi ra ngoài để nơi gọi (worker) quyết định
+ * có thử lại hay không — đừng nuốt lỗi ở đây.
+ */
+export async function runCrawler(sourceSite: string): Promise<ICrawlResult> {
+  const crawler = CRAWLERS.find((c) => c.sourceSite === sourceSite);
+  if (!crawler) {
+    throw new Error(`Không có crawler nào tên "${sourceSite}"`);
+  }
+  logger.info(`[crawler] Bắt đầu crawl ${sourceSite}...`);
+  const products = await crawler.crawl();
+  const matched = await saveProducts(sourceSite, products);
+  logger.info(
+    `[crawler] ${sourceSite}: lấy được ${products.length} sản phẩm, ` +
+    `match ${matched} nguyên liệu`,
+  );
+  return { sourceSite, productsFound: products.length, matched };
+}
+
+/**
+ * Chạy tuần tự toàn bộ nguồn, bắt lỗi từng nguồn để một nguồn hỏng không
+ * chặn nguồn còn lại. Dùng cho `npm run crawl`; đường chạy có hàng đợi thì
+ * gọi runCrawler cho từng nguồn.
  */
 export async function runAllCrawlers(): Promise<void> {
   for (const crawler of CRAWLERS) {
-    logger.info(`[crawler] Bắt đầu crawl ${crawler.sourceSite}...`);
     try {
-      const products = await crawler.crawl();
-      const matched = await saveProducts(crawler.sourceSite, products);
-      logger.info(
-        `[crawler] ${crawler.sourceSite}: lấy được ${products.length} sản ` +
-        `phẩm, match ${matched} nguyên liệu`,
-      );
+      await runCrawler(crawler.sourceSite);
     } catch (err) {
       logger.err(`[crawler] ${crawler.sourceSite} thất bại: ${String(err)}`);
     }
   }
-}
-
-/**
- * Đăng ký cron chạy định kỳ (gọi từ main.ts khi server khởi động).
- */
-export function scheduleCrawlers(): void {
-  cron.schedule(CRON_SCHEDULE, () => {
-    void runAllCrawlers();
-  });
-  logger.info(`[crawler] Đã đặt lịch crawl hằng ngày (${CRON_SCHEDULE})`);
 }
 
 /******************************************************************************

@@ -12,5 +12,22 @@ services:
     volumes:
       - studentbites-pgdata:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7-alpine
+    container_name: studentbites-redis
+    restart: unless-stopped
+    # appendonly: job đang chờ không mất khi khởi động lại container
+    command: redis-server --appendonly yes
+    ports:
+      - '6381:6379'
+    volumes:
+      - studentbites-redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
 volumes:
   studentbites-pgdata:
+  studentbites-redisdata:
