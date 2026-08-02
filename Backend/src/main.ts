@@ -1,7 +1,6 @@
 import logger from 'jet-logger';
 
-import EnvVars, { NodeEnvs } from './common/constants/env';
-import { scheduleCrawlers } from './crawlers/runner';
+import EnvVars from './common/constants/env';
 import server from './server';
 
 /******************************************************************************
@@ -21,9 +20,8 @@ server.listen(EnvVars.Port, (err) => {
     logger.err(err.message);
   } else {
     logger.info(SERVER_START_MESSAGE);
-    // Cron crawl giá hằng ngày (không chạy trong môi trường test)
-    if (EnvVars.NodeEnv !== NodeEnvs.TEST.valueOf()) {
-      scheduleCrawlers();
-    }
+    // Crawl không còn chạy trong tiến trình này. Lịch định kỳ và việc xử lý
+    // job nằm ở tiến trình worker riêng — xem src/worker.ts, chạy bằng
+    // `npm run worker`.
   }
 });

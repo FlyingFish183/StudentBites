@@ -1,6 +1,11 @@
+import { createBullBoard } from '@bull-board/api';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { ExpressAdapter } from '@bull-board/express';
 import { Router } from 'express';
 
+import EnvVars, { NodeEnvs } from '@src/common/constants/env';
 import Paths from '@src/common/constants/Paths';
+import { getCrawlQueue } from '@src/queue/queues';
 
 import AdminRoutes from './AdminRoutes';
 import AuthRoutes from './AuthRoutes';
@@ -9,6 +14,7 @@ import { requireAuth } from './common/auth';
 import LogRoutes from './LogRoutes';
 import PlannerRoutes from './PlannerRoutes';
 import ProfileRoutes from './ProfileRoutes';
+import QueueRoutes from './QueueRoutes';
 import StoreRoutes from './StoreRoutes';
 import UserRoutes from './UserRoutes';
 
@@ -94,6 +100,10 @@ apiRouter.use(Paths.Stores._, requireAuth, storesRouter);
 
 const adminRouter = Router();
 
+// Hàng đợi phải đứng trước :model, nếu không "queue" bị hiểu là tên bảng.
+adminRouter.get(Paths.Admin.QueueStatus, QueueRoutes.status);
+adminRouter.post(Paths.Admin.QueueRun, QueueRoutes.runNow);
+
 adminRouter.get(Paths.Admin.Models, AdminRoutes.listModels);
 // Options phải đứng trước :id, nếu không "options" bị hiểu là một id.
 adminRouter.get(Paths.Admin.Options, AdminRoutes.options);
@@ -102,6 +112,27 @@ adminRouter.get(Paths.Admin.GetOne, AdminRoutes.getOne);
 adminRouter.post(Paths.Admin.Create, AdminRoutes.create);
 adminRouter.put(Paths.Admin.Update, AdminRoutes.update);
 adminRouter.delete(Paths.Admin.Delete, AdminRoutes.remove);
+
+// Bảng điều khiển hàng đợi (tương đương Sidekiq Web).
+//
+// Phải mount TRƯỚC adminRouter, nếu không "queues" bị route /:model nuốt mất.
+// Bỏ qua trong môi trường test: bull-board cần thể hiện Queue ngay lúc mount,
+// mà Queue mở kết nối Redis ngay khi khởi tạo — test không có Redis chạy kèm.
+if (EnvVars.NodeEnv !== NodeEnvs.TEST.valueOf()) {
+  const serverAdapter = new ExpressAdapter();
+  serverAdapter.setBasePath(`${Paths._}${Paths.Admin._}/queues`);
+  createBullBoard({
+    queues: [new BullMQAdapter(getCrawlQueue())],
+    serverAdapter,
+  });
+  // getRouter() khai kiểu any nên ép về Router cho khớp chữ ký của express.
+  apiRouter.use(
+    `${Paths.Admin._}/queues`,
+    requireAuth,
+    requireAdmin,
+    serverAdapter.getRouter() as Router,
+  );
+}
 
 // requireAdmin đứng sau requireAuth: phải đăng nhập rồi mới xét quyền.
 apiRouter.use(Paths.Admin._, requireAuth, requireAdmin, adminRouter);

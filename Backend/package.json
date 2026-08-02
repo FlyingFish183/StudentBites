@@ -6,18 +6,21 @@
     "build:copy-static": "shx mkdir -p dist/public dist/views && shx cp -r src/public/* dist/public && shx cp -r src/views/* dist/views",
     "build:make-db": "shx mkdir -p dist/repos/common && shx touch dist/repos/common/database.json && echo \"{}\" > dist/repos/common/database.json",
     "clean-install": "rm -rf ./node_modules && rm -r package-lock.json && npm i",
-    "dev:basic": "cross-env DOTENV_CONFIG_PATH=./config/.env.development ts-node ./src/main",
-    "dev:watch": "nodemon --exec \"npm run dev:basic\" --watch ./src --ext .ts",
-    "dev": "npm run dev:watch",
-    "db:up": "docker compose up -d",
+    "crawl": "cross-env DOTENV_CONFIG_PATH=./config/.env.development ts-node ./src/crawlers/runner.ts",
     "db:migrate": "prisma migrate dev",
     "db:seed": "cross-env DOTENV_CONFIG_PATH=./config/.env.development ts-node prisma/seed.ts",
-    "crawl": "cross-env DOTENV_CONFIG_PATH=./config/.env.development ts-node ./src/crawlers/runner.ts",
-    "lint": "eslint .",
+    "db:up": "docker compose up -d",
+    "dev": "npm run dev:watch",
+    "dev:basic": "cross-env DOTENV_CONFIG_PATH=./config/.env.development ts-node ./src/main",
+    "dev:watch": "nodemon --exec \"npm run dev:basic\" --watch ./src --ext .ts",
     "format": "prettier --write .",
+    "lint": "eslint .",
     "start": "cross-env DOTENV_CONFIG_PATH=./config/.env.production node -r dotenv/config -r module-alias/register ./dist/main.js",
     "test": "cross-env NODE_ENV=test vitest",
-    "type-check": "tsc -b --noEmit"
+    "type-check": "tsc -b --noEmit",
+    "worker": "cross-env DOTENV_CONFIG_PATH=./config/.env.development ts-node ./src/worker",
+    "worker:prod": "cross-env DOTENV_CONFIG_PATH=./config/.env.production node -r dotenv/config -r module-alias/register ./dist/worker.js",
+    "worker:watch": "nodemon --exec \"npm run worker\" --watch ./src --ext .ts"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -26,9 +29,12 @@
     "@src": "dist"
   },
   "dependencies": {
+    "@bull-board/api": "^8.5.0",
+    "@bull-board/express": "^8.5.0",
     "@prisma/client": "^6.19.3",
     "axios": "^1.19.0",
     "bcryptjs": "^3.0.3",
+    "bullmq": "^5.81.3",
     "cheerio": "^1.2.0",
     "cookie-parser": "^1.4.7",
     "cross-env": "^10.1.0",
@@ -44,7 +50,6 @@
     "jsonwebtoken": "^9.0.3",
     "module-alias": "^2.3.4",
     "morgan": "^1.11.0",
-    "node-cron": "^4.6.0",
     "tspo": "^1.0.7"
   },
   "devDependencies": {
