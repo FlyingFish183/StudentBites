@@ -6,6 +6,11 @@
 **Loại tài liệu:** Explanation + How-to. Mã nguồn:
 [`src/crawlers/`](../src/crawlers/).
 
+> ⚠️ **Tính tới 2026-08-02 cả ba crawler đang trả về 0 sản phẩm** — ba nguyên
+> nhân khác nhau. File này mô tả hệ thống *được thiết kế* ra sao; tình trạng
+> thực tế, khảo sát từng site và việc đang làm nằm ở
+> [sổ tay crawler](./crawler/).
+
 ---
 
 ## Bài toán
