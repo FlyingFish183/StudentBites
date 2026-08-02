@@ -26,7 +26,7 @@ export default function LoginPage() {
     try {
       await api.post("/auth/login", { email, password });
       await queryClient.invalidateQueries({ queryKey: ["me"] });
-      router.replace("/");
+      router.replace("/home");
     } catch (err) {
       setError(
         err instanceof ApiError && err.status === 401
