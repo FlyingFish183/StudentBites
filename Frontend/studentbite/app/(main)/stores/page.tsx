@@ -372,10 +372,14 @@ export default function StoresPage() {
                   </div>
                   {item.bestOffer ? (
                     <p className="mt-0.5 truncate text-[0.68rem] text-panel/55">
-                      Rẻ nhất tại{" "}
+                      {item.bestOffer.productName}
+                      {" · "}
                       <span className="font-bold text-mint">
                         {item.bestOffer.storeName}
                       </span>
+                      {item.bestOffer.isReference && (
+                        <span className="ml-1 opacity-70">(giá tham khảo)</span>
+                      )}
                       {item.offers.length > 1 &&
                         ` · còn ${item.offers.length - 1} nơi khác`}
                       {/* Nguồn online có link sản phẩm thì mở thẳng ra để

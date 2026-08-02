@@ -168,6 +168,8 @@ export interface IPriceOffer {
   estimatedCost: number;
   pricePer100g: number;
   crawledAt: string;
+  /** true = giá seed dự phòng, chưa phải giá crawl */
+  isReference?: boolean;
 }
 
 export interface ICompareResult {
