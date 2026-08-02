@@ -37,6 +37,7 @@ Container → Component). Quyết định kiến trúc ghi dưới dạng **ADR*
 | 06 | [Crawler giá](./06-crawler.md) | Explanation + How-to | Cách crawl, map sản phẩm về nguyên liệu, vận hành |
 | 07 | [Kiểm thử & quy ước](./07-kiem-thu-va-quy-uoc.md) | How-to + Reference | Chạy/viết test, quy ước mã nguồn |
 | 08 | [Vấn đề đã biết](./08-van-de-da-biet.md) | Reference | Giới hạn hiện tại và nợ kỹ thuật, có mức độ ưu tiên |
+| 09 | [Khu quản trị](./09-admin.md) | Explanation + Reference | API generic /api/admin, khoá ngoại, băm mật khẩu, nhật ký thao tác |
 | — | [Quyết định kiến trúc](./adr/) | Explanation | ADR: chọn gì, vì sao, đánh đổi ra sao |
 
 Tài liệu phía giao diện nằm ở
