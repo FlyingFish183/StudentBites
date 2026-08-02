@@ -32,9 +32,15 @@ export const ACTIVITY_LABELS: Record<ActivityLevel, string> = {
 };
 
 export const GOAL_LABELS: Record<Goal, string> = {
-  GAIN_MUSCLE: "Tăng cơ 💪",
-  LOSE_FAT: "Giảm mỡ 🔥",
-  MAINTAIN: "Giữ cân ⚖️",
+  GAIN_MUSCLE: "Tăng cơ",
+  LOSE_FAT: "Giảm mỡ",
+  MAINTAIN: "Giữ cân",
+};
+
+export const GOAL_HINTS: Record<Goal, string> = {
+  GAIN_MUSCLE: "Protein 2g/kg, dư khoảng 300 kcal mỗi ngày",
+  LOSE_FAT: "Protein 2.2g/kg, hụt khoảng 300 kcal mỗi ngày",
+  MAINTAIN: "Protein 1.6g/kg, giữ nguyên mức calo",
 };
 
 export interface IUser {
@@ -128,10 +134,19 @@ export interface IDayLog {
   eatenAt: string;
 }
 
+export type StoreType = "MARKET" | "SUPERMARKET" | "CONVENIENCE" | "ONLINE";
+
+export const STORE_TYPE_LABELS: Record<StoreType, string> = {
+  MARKET: "Chợ",
+  SUPERMARKET: "Siêu thị",
+  CONVENIENCE: "Tiện lợi",
+  ONLINE: "Online",
+};
+
 export interface IStore {
   id: number;
   name: string;
-  type: "MARKET" | "SUPERMARKET" | "CONVENIENCE" | "ONLINE";
+  type: StoreType;
   address: string | null;
   lat: number;
   lng: number;
