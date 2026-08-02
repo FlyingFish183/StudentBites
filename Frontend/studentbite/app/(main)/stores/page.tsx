@@ -378,6 +378,21 @@ export default function StoresPage() {
                       </span>
                       {item.offers.length > 1 &&
                         ` · còn ${item.offers.length - 1} nơi khác`}
+                      {/* Nguồn online có link sản phẩm thì mở thẳng ra để
+                          người dùng tự kiểm giá — chợ ngoài thì không có. */}
+                      {item.bestOffer.productUrl && (
+                        <>
+                          {" · "}
+                          <a
+                            href={item.bestOffer.productUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-bold text-sign underline underline-offset-2"
+                          >
+                            Xem sản phẩm
+                          </a>
+                        </>
+                      )}
                     </p>
                   ) : (
                     <p className="mt-0.5 text-[0.68rem] text-panel/45">
