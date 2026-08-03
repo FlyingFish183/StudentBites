@@ -10,6 +10,7 @@ import Banner from "@/components/ui/Banner";
 import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { api, ApiError } from "@/lib/api";
+import type { IUser } from "@/lib/types";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,8 +25,13 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await api.post("/auth/login", { email, password });
-      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      const { user } = await api.post<{ user: IUser }>("/auth/login", {
+        email,
+        password,
+      });
+      // Seed cache before navigate — stale `me: null` from landing would
+      // otherwise bounce /home back to /login before /auth/me refetches.
+      queryClient.setQueryData(["me"], user);
       router.replace("/home");
     } catch (err) {
       setError(

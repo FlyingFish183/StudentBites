@@ -47,7 +47,7 @@ const SUGGESTIONS = [
 ] as const;
 
 const WELCOME =
-  "Mình là trợ lý StudentBites. Hỏi về protein, ngân sách, thực đơn, hoặc nhờ đổi món / ghi bữa đã ăn.";
+  "Mình chỉ hỗ trợ ăn uống trong StudentBites: protein, ngân sách, thực đơn, đổi món, ghi bữa đã ăn và so giá cửa hàng. Hỏi mình một trong những việc đó nhé.";
 
 /******************************************************************************
                                 Component

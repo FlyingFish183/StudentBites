@@ -20,11 +20,15 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { data: user, isLoading } = useMe();
+  const { data: user, isLoading, isFetching } = useMe();
 
   useEffect(() => {
-    if (!isLoading && user === null) router.replace("/login");
-  }, [isLoading, user, router]);
+    // Wait for refetch — cached null from a logged-out visit must not
+    // redirect while /auth/me is still in flight after login.
+    if (!isLoading && !isFetching && user === null) {
+      router.replace("/login");
+    }
+  }, [isLoading, isFetching, user, router]);
 
   if (isLoading || user === null) {
     return (
