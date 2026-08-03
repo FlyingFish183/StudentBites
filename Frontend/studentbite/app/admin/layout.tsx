@@ -23,11 +23,13 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: user, isLoading } = useMe();
+  const { data: user, isLoading, isFetching } = useMe();
 
   useEffect(() => {
-    if (!isLoading && user === null) router.replace("/login");
-  }, [isLoading, user, router]);
+    if (!isLoading && !isFetching && user === null) {
+      router.replace("/login");
+    }
+  }, [isLoading, isFetching, user, router]);
 
   const modelsQuery = useQuery({
     queryKey: ["admin-models"],

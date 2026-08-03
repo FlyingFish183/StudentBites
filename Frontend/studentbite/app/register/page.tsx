@@ -10,6 +10,7 @@ import Banner from "@/components/ui/Banner";
 import Button from "@/components/ui/Button";
 import Field from "@/components/ui/Field";
 import { api, ApiError } from "@/lib/api";
+import type { IUser } from "@/lib/types";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -25,8 +26,12 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
     try {
-      await api.post("/auth/register", { name, email, password });
-      await queryClient.invalidateQueries({ queryKey: ["me"] });
+      const { user } = await api.post<{ user: IUser }>("/auth/register", {
+        name,
+        email,
+        password,
+      });
+      queryClient.setQueryData(["me"], user);
       // đăng ký xong -> khai báo thể trạng
       router.replace("/onboarding");
     } catch (err) {
