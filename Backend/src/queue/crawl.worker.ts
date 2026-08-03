@@ -2,6 +2,7 @@ import { Job, Worker } from 'bullmq';
 import logger from 'jet-logger';
 
 import { runCrawler } from '@src/crawlers/runner';
+import PriceAlertService from '@src/services/PriceAlertService';
 
 import { redisConnection } from './connection';
 import { ICrawlJobData, QUEUE_CRAWL } from './queues';
@@ -49,8 +50,14 @@ export function createCrawlWorker(): Worker<ICrawlJobData> {
     concurrency: CONCURRENCY,
   });
 
-  worker.on('completed', (job) => {
+  worker.on('completed', async (job) => {
     logger.info(`[worker] job #${job.id} xong: ${job.data.sourceSite}`);
+    try {
+      const count = await PriceAlertService.checkAfterCrawl(job.data.sourceSite);
+      if (count > 0) logger.info(`[worker] ${count} cảnh báo giá giảm đã tạo`);
+    } catch (err) {
+      logger.err(`[worker] checkAfterCrawl lỗi: ${err}`);
+    }
   });
 
   worker.on('failed', (job, err) => {

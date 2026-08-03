@@ -215,3 +215,34 @@ export interface ICompareResult {
   }[];
   bestTotal: number;
 }
+
+export interface IIngredient {
+  id: number;
+  name: string;
+  category: string;
+}
+
+export interface IPriceAlert {
+  id: number;
+  ingredientId: number;
+  ingredientName: string;
+  thresholdPct: number;
+  isActive: boolean;
+}
+
+export interface INotification {
+  id: number;
+  type: string;
+  title: string;
+  payload: {
+    ingredientId: number;
+    ingredientName: string;
+    productName: string;
+    store: string;
+    oldPrice: number;
+    newPrice: number;
+    dropPct: number;
+  };
+  readAt: string | null;
+  createdAt: string;
+}

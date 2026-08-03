@@ -31,7 +31,8 @@ export type IconName =
   | "user"
   | "chat"
   | "send"
-  | "streak";
+  | "streak"
+  | "bell";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   home: <path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-6v6H4.5a1 1 0 0 1-1-1z" />,
@@ -132,6 +133,12 @@ const PATHS: Record<IconName, React.ReactNode> = {
   streak: (
     <>
       <path d="M12 21c4.2-1.2 7-4.4 7-8.2 0-3.5-2-5.8-4.2-7.3-.4 2.2-1.8 3.4-3.3 3.8C11 5.8 10.2 3 10.2 3 7.4 5.6 5 9 5 12.8 5 16.6 7.8 19.8 12 21z" />
+    </>
+  ),
+  bell: (
+    <>
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
     </>
   ),
 };
