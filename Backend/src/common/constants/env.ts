@@ -32,7 +32,8 @@ const EnvVars = jetEnv({
   DatabaseUrl: str,
   JwtSecret: str,
   CookieSecure: bool,
-  OpenAiApiKey: optionalStr,
+  // Tên env giữ đúng OPENAI_API_KEY (không để jet-env tách thành OPEN_AI_API_KEY).
+  OpenAiApiKey: ['OPENAI_API_KEY', optionalStr],
 });
 
 /******************************************************************************
