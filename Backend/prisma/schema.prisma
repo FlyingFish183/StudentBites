@@ -69,6 +69,8 @@ model User {
   profile      Profile?
   mealPlans    MealPlan[]
   mealLogs     MealLog[]
+  priceAlerts   PriceAlert[]
+  notifications Notification[]
 }
 
 model Profile {
@@ -97,6 +99,7 @@ model Ingredient {
   keywords        String[]         @default([]) // dùng để match sản phẩm khi crawl
   dishIngredients DishIngredient[]
   products        Product[]
+  priceAlerts PriceAlert[]
 }
 
 model Store {
@@ -299,6 +302,39 @@ model AdminAuditLog {
   createdAt  DateTime    @default(now())
 
   @@index([model, recordId])
+  @@index([createdAt])
+}
+
+/// Cảnh báo giảm giá do người dùng đặt. Khi giá một nguyên liệu giảm đủ ngưỡng
+/// thì hệ thống tự tạo Notification.
+model PriceAlert {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  thresholdPct Int        @default(10) // giảm ≥ X% thì báo
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, ingredientId])
+  @@index([ingredientId, isActive])
+}
+
+/// Thông báo gửi đến người dùng (giá giảm, nguyên liệu hết hàng…).
+/// Chỉ ghi, ít khi sửa — readAt là dấu đã xem.
+model Notification {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // 'price_drop', 'back_in_stock' …
+  title     String // "Ức gà giảm 15% tại Bách Hóa Xanh"
+  payload   Json // {ingredientId, ingredientName, productName, store, oldPrice, newPrice, dropPct}
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
   @@index([createdAt])
 }
 

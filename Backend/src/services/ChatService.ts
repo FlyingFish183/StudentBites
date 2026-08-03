@@ -11,6 +11,7 @@ import { RouteError } from '@src/common/utils/route-errors';
 
 import LogService from './LogService';
 import PlannerService, { formatDateOnly } from './PlannerService';
+import PriceAlertService from './PriceAlertService';
 import ProfileService from './ProfileService';
 import StatsService from './StatsService';
 import StoreService from './StoreService';
@@ -201,6 +202,19 @@ const TOOLS: ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_price_drops',
+      description:
+        'Lấy danh sách nguyên liệu đang giảm giá gần đây phù hợp với cảnh báo giá của bạn.',
+      parameters: {
+        type: 'object',
+        properties: {},
+        additionalProperties: false,
+      },
+    },
+  },
 ];
 
 /******************************************************************************
@@ -382,6 +396,10 @@ async function runTool(
         });
         actions.push('meal_logged');
         return { log };
+      }
+      case 'get_price_drops': {
+        const drops = await PriceAlertService.getPriceDrops(userId);
+        return { drops };
       }
       default:
         return { error: `Không biết tool ${name}` };

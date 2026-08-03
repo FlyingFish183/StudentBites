@@ -10,6 +10,9 @@ import { getCrawlQueue } from '@src/queue/queues';
 import AdminRoutes from './AdminRoutes';
 import AuthRoutes from './AuthRoutes';
 import ChatRoutes from './ChatRoutes';
+import IngredientRoutes from './IngredientRoutes';
+import NotificationRoutes from './NotificationRoutes';
+import PriceAlertRoutes from './PriceAlertRoutes';
 import { requireAdmin } from './common/admin-auth';
 import { requireAuth } from './common/auth';
 import LogRoutes from './LogRoutes';
@@ -105,6 +108,33 @@ const chatRouter = Router();
 chatRouter.post(Paths.Chat.Send, ChatRoutes.send);
 
 apiRouter.use(Paths.Chat._, requireAuth, chatRouter);
+
+// ----------------------- Price Alerts ----------------------------------- //
+
+const priceAlertRouter = Router();
+
+priceAlertRouter.post(Paths.PriceAlerts.Create, PriceAlertRoutes.create);
+priceAlertRouter.get(Paths.PriceAlerts.List, PriceAlertRoutes.list);
+priceAlertRouter.delete(Paths.PriceAlerts.Delete, PriceAlertRoutes.remove);
+
+apiRouter.use(Paths.PriceAlerts._, requireAuth, priceAlertRouter);
+
+// ----------------------- Notifications ---------------------------------- //
+
+const notificationRouter = Router();
+
+notificationRouter.get(Paths.Notifications.List, NotificationRoutes.list);
+notificationRouter.put(Paths.Notifications.MarkRead, NotificationRoutes.markRead);
+
+apiRouter.use(Paths.Notifications._, requireAuth, notificationRouter);
+
+// ----------------------- Ingredients ------------------------------------ //
+
+const ingredientRouter = Router();
+
+ingredientRouter.get(Paths.Ingredients.List, IngredientRoutes.list);
+
+apiRouter.use(Paths.Ingredients._, requireAuth, ingredientRouter);
 
 // ----------------------- Admin ------------------------------------------ //
 

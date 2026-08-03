@@ -51,6 +51,21 @@ const Paths = {
     _: '/chat',
     Send: '/',
   },
+  PriceAlerts: {
+    _: '/price-alerts',
+    Create: '/',
+    List: '/',
+    Delete: '/:id',
+  },
+  Notifications: {
+    _: '/notifications',
+    List: '/',
+    MarkRead: '/:id',
+  },
+  Ingredients: {
+    _: '/ingredients',
+    List: '/',
+  },
   Admin: {
     _: '/admin',
     Models: '/models',

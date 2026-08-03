@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 import EnvVars from '@src/common/constants/env';
 
@@ -17,4 +17,5 @@ const prisma = new PrismaClient({
                             Export default
 ******************************************************************************/
 
+export { Prisma };
 export default prisma;
